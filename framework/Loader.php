@@ -6,9 +6,6 @@
  * Time: 8:58
  */
 
-//namespace Framework;
-
-
 class Loader
 {
     /**
