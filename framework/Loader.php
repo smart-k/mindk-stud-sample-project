@@ -6,43 +6,43 @@
  * Time: 8:58
  */
 
-class Loader
+use \Framework\Singleton;
+
+class Loader extends Singleton
 {
     /**
      * An associative array
      *
-     * Key contains a namespace prefix
+     * Key contains a namespace
      * Value contains a base directories for the classes in this namespace
      * @var array
      */
-    static private $prefixes = array();
+    static private $namespaces = array();
 
     /**
-     * Register the loader on the SPL stack
-     *
-     * @return void
+     * Class Loader constructor
+     * Registers autoloader in the stack SPL
      */
-    public function register()
+    private function __construct()
     {
-        spl_autoload_register(array($this, 'loadClass'));
-
+        spl_autoload_register(array(__CLASS__, 'load'));
     }
 
     /**
-     * Adds the base directory for the namespace prefix
+     * Adds the base directory for the namespace
      *
-     * @param string $prefix Namespace prefix
+     * @param string $namespace Namespace prefix
      * @param string $base_dir Base directory for the class files of the namespace
      * @param bool $first If true, add the base directory to the begin of the array. In this case, it will be checked first
      * @return void
      */
-    static function addNamespacePath($prefix, $base_dir, $first = false)
+    static function addNamespacePath($namespace, $base_dir, $first = true)
     {
         /**
-         * Namespace prefix normalization
+         * Namespace normalization
          * @var string
          */
-        $prefix = trim($prefix, '\\') . '\\';
+        $namespace = trim($namespace, '\\') . '\\';
 
         /**
          * Base directory normalization
@@ -51,15 +51,15 @@ class Loader
         $base_dir = rtrim($base_dir, DIRECTORY_SEPARATOR) . '/';
 
         // Initialize an array of base directories for the classes in this namespace
-        if (isset(self::$prefixes[$prefix]) === false) {
-            self::$prefixes[$prefix] = array();
+        if (empty(self::$namespaces[$namespace]) === true) {
+            self::$namespaces[$namespace] = array();
         }
 
         // Adds the base directory to the associative array
         if ($first) {
-            array_unshift(self::$prefixes[$prefix], $base_dir);
+            array_unshift(self::$namespaces[$namespace], $base_dir);
         } else {
-            array_push(self::$prefixes[$prefix], $base_dir);
+            array_push(self::$namespaces[$namespace], $base_dir);
         }
     }
 
@@ -69,31 +69,31 @@ class Loader
      * @param string $class Full class name
      * @return mixed If success returns full file name, otherwise returns false
      */
-    private function loadClass($class)
+    static function load($class)
     {
         /**
-         * Namespace prefix
+         * Namespace
          * @var string
          */
-        $prefix = $class;
+        $namespace = $class;
 
-        // Walk around the namespace prefix to determine the file name
-        while (false !== $pos = strrpos($prefix, '\\')) {
+        // Work around the namespace to determine the file name
+        while (false !== $pos = strrpos($namespace, '\\')) {
 
-            // Saves namespace prefix with trailing separator
-            $prefix = substr($class, 0, $pos + 1);
+            // Saves namespace prefix with separator on the end
+            $namespace = substr($class, 0, $pos + 1);
 
             // Gets relative class name
             $relative_class = substr($class, $pos + 1);
 
             // Trying to load the file that matches namespace prefix and relative class name
-            $mapped_file = $this->loadMappedFile($prefix, $relative_class);
-            if ($mapped_file) {
-                return $mapped_file;
+            $file = self::loadFile($namespace, $relative_class);
+            if ($file) {
+                return $file;
             }
 
-            // Remove trailing separator for the next iteration of strrpos()
-            $prefix = rtrim($prefix, '\\');
+            // Remove separator on the end for the next iteration
+            $namespace = rtrim($namespace, '\\');
         }
 
         // File not found
@@ -103,19 +103,19 @@ class Loader
     /**
      * Loads the file that matches namespace prefix and relative class name
      *
-     * @param string $prefix Namespace prefix
+     * @param string $namespace Namespace
      * @param string $relative_class Relative class name
      * @return mixed false if file was not loaded, otherwise returns the name of the loaded file
      */
-    private function loadMappedFile($prefix, $relative_class)
+    private function loadFile($namespace, $relative_class)
     {
         // Checks whether this namespace prefix has any base directory
-        if (isset(self::$prefixes[$prefix]) === false) {
+        if (empty(self::$namespaces[$namespace]) === true) {
             return false;
         }
 
         // Looks for a file in the base directories
-        foreach (self::$prefixes[$prefix] as $base_dir) {
+        foreach (self::$namespaces[$namespace] as $base_dir) {
 
             // Substitutes namespace prefix for base directory prefix
             // Substitutes namespace separators for directory separators
@@ -125,7 +125,7 @@ class Loader
                 . '.php';
 
             // If file exists - load it
-            if ($this->requireFile($file)) {
+            if ($this->includeFile($file)) {
                 return $file;
             }
         }
@@ -133,27 +133,25 @@ class Loader
         // File not found
         return false;
     }
+
     /**
      * If file exists then loads it
      *
      * @param string $file File to load
      * @return bool true if file exists, otherwise - false
      */
-    private function requireFile($file)
+    private function includeFile($file)
     {
         if (file_exists($file)) {
-            require_once $file;
+            include_once $file;
             return true;
         }
         return false;
     }
 }
 
-// Creates an instance of the Loader
-$loader = new Loader();
+// Register base directory for namespace prefix Framework\ ..
+Loader::addNamespacePath('Framework\\', __DIR__ . '/../framework');
 
-// Register the loader
-$loader->register();
-
-// Register base directory for a namespace prefix Framework\ ..
-Loader::addNamespacePath('Framework\\' , __DIR__ . '/../framework' );
+// Register autoloader
+Loader::getInstance();
