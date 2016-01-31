@@ -8,7 +8,7 @@
 
 namespace Blog\Model;
 
-/*use Framework\Model\ActiveRecord;
+use Framework\Model\ActiveRecord;
 use Framework\Security\Model\UserInterface;
 
 class User extends ActiveRecord implements UserInterface
@@ -27,9 +27,4 @@ class User extends ActiveRecord implements UserInterface
     {
         return $this->role;
     }
-}*/
-use Framework\Model\Model;
-
-class User extends Model{
-    public $name = 'Kostiantyn';
 }

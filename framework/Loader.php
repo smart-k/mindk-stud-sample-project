@@ -1,14 +1,12 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: K.Gritsenko
  * Date: 25.01.2016
  * Time: 8:58
  */
-
-use \Framework\Singleton;
-
-class Loader extends Singleton
+class Loader
 {
     /**
      * An associative array
@@ -20,12 +18,33 @@ class Loader extends Singleton
     static private $namespaces = array();
 
     /**
+     * Keeps instance of the class Loader
+     * @var Loader|object
+     */
+    static private $instance = null;
+
+    /**
+     * @return Loader|object
+     */
+    static function getInstance()
+    {
+        if (empty(self::$instance)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    /**
      * Class Loader constructor
      * Registers autoloader in the stack SPL
      */
     private function __construct()
     {
         spl_autoload_register(array(__CLASS__, 'load'));
+    }
+
+    final private function __clone() // We do not need to copy objects
+    {
     }
 
     /**
@@ -69,7 +88,7 @@ class Loader extends Singleton
      * @param string $class Full class name
      * @return mixed If success returns full file name, otherwise returns false
      */
-    static function load($class)
+    private function load($class)
     {
         /**
          * Namespace
