@@ -43,7 +43,7 @@ class Loader
         spl_autoload_register(array(__CLASS__, 'load'));
     }
 
-    final private function __clone() // We do not need to copy objects
+    final private function __clone() // We do not need to copy objects so lock it
     {
     }
 
@@ -55,7 +55,7 @@ class Loader
      * @param bool $first If true, add the base directory to the begin of the array. In this case, it will be checked first
      * @return void
      */
-    static function addNamespacePath($namespace, $base_dir, $first = true)
+    static function addNamespacePath($namespace, $base_dir, $first = false)
     {
         /**
          * Namespace normalization
