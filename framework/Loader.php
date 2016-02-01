@@ -114,9 +114,6 @@ class Loader
             // Remove separator on the end for the next iteration
             $namespace = rtrim($namespace, '\\');
         }
-
-        // File not found
-        return false;
     }
 
     /**
@@ -170,7 +167,7 @@ class Loader
 }
 
 // Register base directory for namespace prefix Framework\ ..
-Loader::addNamespacePath('Framework\\', __DIR__ . '/../framework');
-
+//Loader::addNamespacePath('Framework\\', __DIR__ . '/../framework');
+Loader::addNamespacePath('Framework\\', __DIR__);
 // Register autoloader
 Loader::getInstance();
