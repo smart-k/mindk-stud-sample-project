@@ -9,8 +9,6 @@
 namespace Framework\Router;
 
 
-use Framework\Factory;
-
 /**
  * Class Router
  * @package Framework\Router
@@ -20,7 +18,7 @@ class Router
 
     /**
      * An associative array.
-     * Contains mapped routes.
+     * Contains preliminary mapped routes.
      *
      * @var array
      */
@@ -28,7 +26,7 @@ class Router
 
     /**
      * Router constructor.
-     * @param array $routing_map Mapped routes from config file.
+     * @param array $routing_map Contains preliminary mapped routes.
      */
     public function __construct($routing_map = array())
     {
@@ -39,53 +37,89 @@ class Router
     /**
      * Parces route.
      *
-     * @param $url
-     * @return array $request
+     * @param $uri
+     * @return array $route_found An associative array of route's parameters.
      */
-    public function parseRoute($url)
+    public function parseRoute($uri)
     {
 
-        $request = $_REQUEST;
-
-        echo "<pre>";
+        $route_found = null;
 
         foreach (self::$_map as $route) {
 
             $pattern = $this->prepare($route);
 
-            echo $pattern . '<br />';
-
-            /*if (preg_match($pattern, $url, $params)) {
-
-                // Get assoc array of params:
-                preg_match($pattern, str_replace(array('{', '}'), '', $route['pattern']), $param_names);
-                $params = array_map('urldecode', $params);
-                $params = array_combine($param_names, $params);
-                array_shift($params); // Get rid of 0 element
+            if (preg_match($pattern, $uri, $params)) {
 
                 $route_found = $route;
-                $route_found['params'] = $params;
+
+                if (preg_match('~({.+})~Ui', $route['pattern'], $param_name)) // // Get associative array of parameter
+                {
+                     $param_name = array_map(function ($name) {
+                        return trim($name, '{}');
+                    }, $param_name);
+
+                    $combine_param = array_combine($param_name, $params);
+                    $route_found['parameter'] = $combine_param;
+                }
+
 
                 break;
-            }*/
+            }
 
         }
 
-        return $request;
+        return $route_found;
     }
+
+    /**
+     * @param $route URI pattern from preliminary mapped route.
+     * @return string $pattern Prepared URI pattern with considering of URI pattern requirements.
+     */
+    private function prepare($route)
+    {
+        if (empty($route['_requirements']['id'])) {
+            $pattern = preg_replace('~\{[\w\d_]+\}~i', '([\w\d_]+)', $route['pattern']);
+        } else {
+            $pattern = preg_replace('~\{[\w\d_]+\}~i', '(' . $route['_requirements']['id'] . ')', $route['pattern']);
+        }
+
+        $pattern = '~^' . $pattern . '$~';
+
+        return $pattern;
+    }
+
 
     public function buildRoute($route_name, $params = array())
     {
         // @TODO: Your code...
     }
 
-    private function prepare($route)
+    function test()
     {
-
-        $pattern = preg_replace('~\{[\w\d_]+\}~i', '([\w\d_]+)', $route['pattern']);
-
-        $pattern = '~^' . $pattern . '$~';
-
-        return $pattern;
+        echo '<pre>';
+        echo $path = '/', "\n";
+        print_r($this->parseRoute($path));
+        echo $path = '/test_redirect', "\n";
+        print_r($this->parseRoute($path));
+        echo $path = '/test_json', "\n";
+        print_r($this->parseRoute($path));
+        echo $path = '/signin', "\n";
+        print_r($this->parseRoute($path));
+        echo $path = '/login', "\n";
+        print_r($this->parseRoute($path));
+        echo $path = '/logout', "\n";
+        print_r($this->parseRoute($path));
+        echo $path = '/profile', "\n";
+        print_r($this->parseRoute($path));
+        echo $path = '/posts/add', "\n";
+        print_r($this->parseRoute($path));
+        echo $path = '/posts/25', "\n";
+        print_r($this->parseRoute($path));
+        echo $path = '/posts/35/edit', "\n";
+        print_r($this->parseRoute($path));
+        echo '</pre>';
+        exit();
     }
+
 }

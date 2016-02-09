@@ -26,12 +26,14 @@ class Application
         $route = $router->parseRoute($_SERVER['REQUEST_URI']);
 
         if (!empty($route)) {
-
+// @TODO: Invoke appropriate controller and action
         } else {
 // @TODO: Trow an exception
         }
 
-        echo '<pre>';
+
         print_r($route);
+        $router->test();
     }
 }
+
