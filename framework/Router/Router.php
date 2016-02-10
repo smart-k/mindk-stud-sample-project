@@ -22,11 +22,11 @@ class Router
      *
      * @var array
      */
-    protected static $_map = array();
+    private static $_map = array();
 
     /**
      * Router constructor.
-     * @param array $routing_map Contains preliminary mapped routes.
+     * @param array $routing_map Contains preliminary mapped routes from config.
      */
     public function __construct($routing_map = array())
     {
@@ -42,60 +42,85 @@ class Router
      */
     public function parseRoute($uri)
     {
-
         $route_found = null;
 
         foreach (self::$_map as $route) {
+            $param_names = $this->parseParameterName($route); // Parse parameter's names from config's route pattern
+            $pattern = $this->prepare($route, $param_names); // Prepare root: taking into account pattern requirements for route parameters
 
-            $pattern = $this->prepare($route);
-
-            if (preg_match($pattern, $uri, $params)) {
+            if (preg_match_all($pattern, $uri, $params)) {
 
                 $route_found = $route;
 
-                if (preg_match('~({.+})~Ui', $route['pattern'], $param_name)) // // Get associative array of parameter
-                {
-                     $param_name = array_map(function ($name) {
-                        return trim($name, '{}');
-                    }, $param_name);
-
-                    $combine_param = array_combine($param_name, $params);
-                    $route_found['parameter'] = $combine_param;
+                if (!empty($param_names)) {
+                    array_shift($params);
+                    for ($i = 0; $i < count($params); $i++) { // Prepare array $params  to be able combining with array $param_names
+                        $prepared_params[$i] = $params[$i][0];
+                    }
+                    $combine_params = array_combine($param_names, $prepared_params);
+                    $route_found['parameters'] = $combine_params;
                 }
-
-
                 break;
             }
-
         }
-
         return $route_found;
     }
 
     /**
-     * @param $route URI pattern from preliminary mapped route.
-     * @return string $pattern Prepared URI pattern with considering of URI pattern requirements.
+     * Parse parameter's names from config's route pattern
+     *
+     * @param string $route
+     * @return array|null Route parameter's names
      */
-    private function prepare($route)
+    private function parseParameterName($route)
     {
-        if (empty($route['_requirements']['id'])) {
-            $pattern = preg_replace('~\{[\w\d_]+\}~i', '([\w\d_]+)', $route['pattern']);
-        } else {
-            $pattern = preg_replace('~\{[\w\d_]+\}~i', '(' . $route['_requirements']['id'] . ')', $route['pattern']);
+        $trimmed_names = null;
+
+        if (preg_match_all('~({.+})~Ui', $route['pattern'], $matched_names)) {
+            array_shift($matched_names);
+            $trimmed_names = array_map(function ($name) {
+                return preg_replace('~[{}]~', '', $name);
+            }, $matched_names[0]);
         }
-
-        $pattern = '~^' . $pattern . '$~';
-
-        return $pattern;
+        return $trimmed_names;
     }
 
-
-    public function buildRoute($route_name, $params = array())
+    /**
+     * Prepare URI pattern.
+     *
+     * @param string $route URI pattern from config.
+     * @param array $names Route parameter's names from config.
+     * @return string $pattern Prepared URI pattern with considering of pattern requirements for route parameters.
+     */
+    private function prepare($route, $names)
     {
-        // @TODO: Your code...
+        $pattern = $route['pattern'];
+        if (!empty($names)) {
+            foreach ($names as $key) {
+                if (empty($route['_requirements'][$key])) {
+                    $pattern = preg_replace('~\{' . $key . '\}~', '([\w\d_]+)', $pattern);
+                } else {
+                    $pattern = preg_replace('~\{' . $key . '\}~', '(' . $route['_requirements'][$key] . ')', $pattern);
+                }
+            }
+        }
+        return '~^' . $pattern . '$~';
     }
 
-    function test()
+
+    public function buildRoute($route_name, $params = null)
+    {
+        $route_found = !empty(self::$_map[$route_name]['pattern']) ? self::$_map[$route_name]['pattern'] : null;
+
+        if ($route_found && !empty($params)) {
+            foreach ($params as $key => $value) {
+                $route_found = preg_replace('~\{' . $key . '\}~', $value, $route_found);
+            }
+        }
+        return $route_found;
+    }
+
+    function test1()
     {
         echo '<pre>';
         echo $path = '/', "\n";
@@ -114,7 +139,7 @@ class Router
         print_r($this->parseRoute($path));
         echo $path = '/posts/add', "\n";
         print_r($this->parseRoute($path));
-        echo $path = '/posts/25', "\n";
+        echo $path = '/posts/25/edit/30', "\n";
         print_r($this->parseRoute($path));
         echo $path = '/posts/35/edit', "\n";
         print_r($this->parseRoute($path));
@@ -122,4 +147,32 @@ class Router
         exit();
     }
 
+    function test2()
+    {
+        echo '<pre>';
+        echo $route_name = 'home', "\n";
+        echo ($this->buildRoute($route_name)),  "\n";
+        echo $route_name = 'testredirect', "\n";
+        echo ($this->buildRoute($route_name)),  "\n";
+        echo $route_name = 'test_json', "\n";
+        echo ($this->buildRoute($route_name)), "\n";
+        echo $route_name = 'signin', "\n";
+        echo ($this->buildRoute($route_name)), "\n";
+        echo $route_name = 'login', "\n";
+        echo ($this->buildRoute($route_name)), "\n";
+        echo $route_name = 'logout', "\n";
+        echo ($this->buildRoute($route_name)), "\n";
+        echo $route_name = 'update_profile', "\n";
+        echo $this->buildRoute($route_name), "\n";
+        echo $route_name = 'profile', "\n";
+        echo ($this->buildRoute($route_name)), "\n";
+        echo $route_name = 'add_post', "\n";
+        echo ($this->buildRoute($route_name)), "\n";
+        echo $route_name = 'show_post', "\n";
+        echo ($this->buildRoute($route_name, array("id" => 25, "post" => 30))), "\n";
+        echo $route_name = 'edit_post', "\n";
+        echo ($this->buildRoute($route_name, array("id" => 25))), "\n";
+        echo '</pre>';
+        exit();
+    }
 }

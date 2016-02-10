@@ -3,7 +3,7 @@
 return array(
     'home'           => array(
         'pattern'    => '/',
-        'controller' => 'Blog\\Controller\\PostController',
+        'controller' => 'Blog\\Controller\\PostContro  ller',
         'action'     => 'index'
     ),
     'testredirect'   => array(
@@ -51,7 +51,7 @@ return array(
         'security'   => array('ROLE_USER'),
     ),
     'show_post'      => array(
-        'pattern'       => '/posts/{id}',
+        'pattern'       => '/posts/{id}/edit/{post}',
         'controller'    => 'Blog\\Controller\\PostController',
         'action'        => 'show',
         '_requirements' => array(
