@@ -28,12 +28,8 @@ class Application
         if (!empty($route)) {
 // @TODO: Invoke appropriate controller and action
         } else {
-// @TODO: Trow an exception
+// @TODO: Throw an exception
         }
-
-
-        print_r($route);
-        $router->test();
     }
 }
 
