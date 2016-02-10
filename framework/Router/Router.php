@@ -108,6 +108,13 @@ class Router
     }
 
 
+    /**
+     * Build route.
+     *
+     * @param string $route_name
+     * @param array $params
+     * @return string|null
+     */
     public function buildRoute($route_name, $params = null)
     {
         $route_found = !empty(self::$_map[$route_name]['pattern']) ? self::$_map[$route_name]['pattern'] : null;
@@ -118,61 +125,5 @@ class Router
             }
         }
         return $route_found;
-    }
-
-    function test1()
-    {
-        echo '<pre>';
-        echo $path = '/', "\n";
-        print_r($this->parseRoute($path));
-        echo $path = '/test_redirect', "\n";
-        print_r($this->parseRoute($path));
-        echo $path = '/test_json', "\n";
-        print_r($this->parseRoute($path));
-        echo $path = '/signin', "\n";
-        print_r($this->parseRoute($path));
-        echo $path = '/login', "\n";
-        print_r($this->parseRoute($path));
-        echo $path = '/logout', "\n";
-        print_r($this->parseRoute($path));
-        echo $path = '/profile', "\n";
-        print_r($this->parseRoute($path));
-        echo $path = '/posts/add', "\n";
-        print_r($this->parseRoute($path));
-        echo $path = '/posts/25/edit/30', "\n";
-        print_r($this->parseRoute($path));
-        echo $path = '/posts/35/edit', "\n";
-        print_r($this->parseRoute($path));
-        echo '</pre>';
-        exit();
-    }
-
-    function test2()
-    {
-        echo '<pre>';
-        echo $route_name = 'home', "\n";
-        echo ($this->buildRoute($route_name)),  "\n";
-        echo $route_name = 'testredirect', "\n";
-        echo ($this->buildRoute($route_name)),  "\n";
-        echo $route_name = 'test_json', "\n";
-        echo ($this->buildRoute($route_name)), "\n";
-        echo $route_name = 'signin', "\n";
-        echo ($this->buildRoute($route_name)), "\n";
-        echo $route_name = 'login', "\n";
-        echo ($this->buildRoute($route_name)), "\n";
-        echo $route_name = 'logout', "\n";
-        echo ($this->buildRoute($route_name)), "\n";
-        echo $route_name = 'update_profile', "\n";
-        echo $this->buildRoute($route_name), "\n";
-        echo $route_name = 'profile', "\n";
-        echo ($this->buildRoute($route_name)), "\n";
-        echo $route_name = 'add_post', "\n";
-        echo ($this->buildRoute($route_name)), "\n";
-        echo $route_name = 'show_post', "\n";
-        echo ($this->buildRoute($route_name, array("id" => 25, "post" => 30))), "\n";
-        echo $route_name = 'edit_post', "\n";
-        echo ($this->buildRoute($route_name, array("id" => 25))), "\n";
-        echo '</pre>';
-        exit();
     }
 }

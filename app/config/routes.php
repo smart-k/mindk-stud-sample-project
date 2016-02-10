@@ -1,69 +1,69 @@
 <?php
 
 return array(
-    'home'           => array(
-        'pattern'    => '/',
-        'controller' => 'Blog\\Controller\\PostContro  ller',
-        'action'     => 'index'
+    'home' => array(
+        'pattern' => '/',
+        'controller' => 'Blog\\Controller\\PostController',
+        'action' => 'index'
     ),
-    'testredirect'   => array(
-        'pattern'    => '/test_redirect',
+    'testredirect' => array(
+        'pattern' => '/test_redirect',
         'controller' => 'Blog\\Controller\\TestController',
-        'action'     => 'redirect',
+        'action' => 'redirect',
     ),
     'test_json' => array(
-        'pattern'    => '/test_json',
+        'pattern' => '/test_json',
         'controller' => 'Blog\\Controller\\TestController',
-        'action'     => 'getJson',
+        'action' => 'getJson',
     ),
-    'signin'         => array(
-        'pattern'    => '/signin',
+    'signin' => array(
+        'pattern' => '/signin',
         'controller' => 'Blog\\Controller\\SecurityController',
-        'action'     => 'signin'
+        'action' => 'signin'
     ),
-    'login'          => array(
-        'pattern'    => '/login',
+    'login' => array(
+        'pattern' => '/login',
         'controller' => 'Blog\\Controller\\SecurityController',
-        'action'     => 'login'
+        'action' => 'login'
     ),
-    'logout'         => array(
-        'pattern'    => '/logout',
+    'logout' => array(
+        'pattern' => '/logout',
         'controller' => 'Blog\\Controller\\SecurityController',
-        'action'     => 'logout'
+        'action' => 'logout'
     ),
     'update_profile' => array(
-        'pattern'       => '/profile',
-        'controller'    => 'CMS\\Controller\\ProfileController',
-        'action'        => 'update',
+        'pattern' => '/profile',
+        'controller' => 'CMS\\Controller\\ProfileController',
+        'action' => 'update',
         '_requirements' => array(
             '_method' => 'POST'
         )
     ),
-    'profile'        => array(
-        'pattern'    => '/profile',
+    'profile' => array(
+        'pattern' => '/profile',
         'controller' => 'CMS\\Controller\\ProfileController',
-        'action'     => 'get'
+        'action' => 'get'
     ),
-    'add_post'       => array(
-        'pattern'    => '/posts/add',
+    'add_post' => array(
+        'pattern' => '/posts/add',
         'controller' => 'Blog\\Controller\\PostController',
-        'action'     => 'add',
-        'security'   => array('ROLE_USER'),
+        'action' => 'add',
+        'security' => array('ROLE_USER'),
     ),
-    'show_post'      => array(
-        'pattern'       => '/posts/{id}/edit/{post}',
-        'controller'    => 'Blog\\Controller\\PostController',
-        'action'        => 'show',
+    'show_post' => array(
+        'pattern' => '/posts/{id}',
+        'controller' => 'Blog\\Controller\\PostController',
+        'action' => 'show',
         '_requirements' => array(
             'id' => '\d+'
         )
     ),
-    'edit_post'      => array(
-        'pattern'       => '/posts/{id}/edit',
-        'controller'    => 'CMS\\Controller\\BlogController',
-        'action'        => 'edit',
+    'edit_post' => array(
+        'pattern' => '/posts/{id}/edit',
+        'controller' => 'CMS\\Controller\\BlogController',
+        'action' => 'edit',
         '_requirements' => array(
-            'id'      => '\d+',
+            'id' => '\d+',
             '_method' => 'POST'
         )
 
