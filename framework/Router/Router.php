@@ -40,7 +40,7 @@ class Router
      * @param $url
      * @return array $route_found An associative array of route's parameters.
      */
-    public function parseRoute($uri=null)
+    public function parseRoute($uri = null)
     {
         $route_found = null;
 
@@ -101,8 +101,7 @@ class Router
      * @param array $names Route parameter's names from config.
      * @return string $pattern Prepared URI pattern with considering of pattern requirements for route parameters.
      */
-    private
-    function prepare($route, $names)
+    private function prepare($route, $names)
     {
         $pattern = $route['pattern'];
         if (!empty($names)) {
