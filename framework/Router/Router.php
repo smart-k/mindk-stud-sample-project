@@ -37,12 +37,14 @@ class Router
     /**
      * Parces route.
      *
-     * @param $uri
+     * @param $url
      * @return array $route_found An associative array of route's parameters.
      */
-    public function parseRoute($uri)
+    public function parseRoute($uri=null)
     {
         $route_found = null;
+
+        $uri = empty($uri) ? $_SERVER['REQUEST_URI'] : $uri;
 
         foreach (self::$_map as $route) {
             $param_names = $this->parseParameterName($route); // Parse parameter's names from config's route pattern
@@ -51,6 +53,13 @@ class Router
             if (preg_match_all($pattern, $uri, $params)) {
 
                 $route_found = $route;
+
+                if ($route['pattern'] == '/profile') {
+                    // Taking into account requirements for the type of HTTP request
+                    $route_found = ($_SERVER['REQUEST_METHOD'] == 'POST') ? $route_found = self::$_map['update_profile'] : $route_found = self::$_map['profile'];
+                }
+
+                $route_found['parameters'] = array();
 
                 if (!empty($param_names)) {
                     array_shift($params);
@@ -92,7 +101,8 @@ class Router
      * @param array $names Route parameter's names from config.
      * @return string $pattern Prepared URI pattern with considering of pattern requirements for route parameters.
      */
-    private function prepare($route, $names)
+    private
+    function prepare($route, $names)
     {
         $pattern = $route['pattern'];
         if (!empty($names)) {
@@ -126,4 +136,5 @@ class Router
         }
         return $route_found;
     }
+
 }
