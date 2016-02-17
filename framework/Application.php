@@ -22,13 +22,12 @@ class Application
     public function run()
     {
         $router = new Router(include('../app/config/routes.php'));
-        $route =  $router->parseRoute();
+        $route = $router->parseRoute();
         if (!empty($route)) {
 // @TODO: Invoke appropriate controller and action
         } else {
 // @TODO: Throw an exception
         }
-
     }
 }
 

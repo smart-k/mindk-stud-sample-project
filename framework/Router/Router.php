@@ -45,6 +45,7 @@ class Router
         $route_found = null;
 
         $uri = empty($uri) ? $_SERVER['REQUEST_URI'] : $uri;
+        $uri = '/' . trim($uri, '/'); // Unified standard: /profile
 
         foreach (self::$_map as $route) {
             $param_names = $this->parseParameterName($route); // Parse parameter's names from config's route pattern
@@ -113,6 +114,7 @@ class Router
                 }
             }
         }
+
         return '~^' . $pattern . '$~';
     }
 
