@@ -23,11 +23,42 @@ class Application
     {
         $router = new Router(include('../app/config/routes.php'));
         $route = $router->parseRoute();
-        if (!empty($route)) {
-// @TODO: Invoke appropriate controller and action
-        } else {
-// @TODO: Throw an exception
+        try {
+            if (!empty($route)) {
+                $controllerReflection = new \ReflectionClass($route['controller']);
+
+                if (!$controllerReflection->isSubclassOf('Controller')) {
+                    throw new \Exception("Unknown controller $controllerReflection");
+                }
+
+                $action = $route['action'] . 'Action';
+
+                if ($controllerReflection->hasMethod($action)) {
+                    $actionReflection = new ReflectionMethodAssocParams($route['controller'], $action);
+                    $controller = $controllerReflection->newInstance();
+                    $response = $actionReflection->invokeArgs($controller, $route['parameters']);
+                    if ($response instanceof Response) {
+                        // ...
+
+                    } else {
+                        throw new BadResponseTypeException('Ooops');
+                    }
+                }
+            } else {
+//                throw new HttpNotFoundException('Route not found');
+            }
+        } catch (HttpNotFoundException $e) {
+            // Render 404 or just show msg
+        } catch (AuthRequredException $e) {
+            // Reroute to login page
+            //$response = new RedirectResponse(...);
+        } catch (\Exception $e) {
+            // Do 500 layout...
+            echo $e->getMessage();
         }
+
+        $response->send();
     }
+
 }
 
