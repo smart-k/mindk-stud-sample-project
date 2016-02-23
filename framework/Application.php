@@ -9,6 +9,7 @@
 namespace Framework;
 
 use Framework\Router\Router;
+use Framework\Response\Response;
 
 
 /**
@@ -27,25 +28,27 @@ class Application
             if (!empty($route)) {
                 $controllerReflection = new \ReflectionClass($route['controller']);
 
-                if (!$controllerReflection->isSubclassOf('Controller')) {
+                if (!$controllerReflection->isSubclassOf('Framework\Controller\Controller')) {
                     throw new \Exception("Unknown controller $controllerReflection");
                 }
 
                 $action = $route['action'] . 'Action';
 
                 if ($controllerReflection->hasMethod($action)) {
-                    $actionReflection = new ReflectionMethodAssocParams($route['controller'], $action);
+                    // ReflectionMethod::invokeArgs() has overloaded in class ReflectionMethodNamedArgs
+                    // Now it provides invoking with named arguments
+                    $actionReflection = new ReflectionMethodNamedArgs($route['controller'], $action);
                     $controller = $controllerReflection->newInstance();
                     $response = $actionReflection->invokeArgs($controller, $route['parameters']);
                     if ($response instanceof Response) {
                         // ...
-
+                        $response->send();
                     } else {
                         throw new BadResponseTypeException('Ooops');
                     }
                 }
             } else {
-//                throw new HttpNotFoundException('Route not found');
+                throw new HttpNotFoundException('Route not found');
             }
         } catch (HttpNotFoundException $e) {
             // Render 404 or just show msg
@@ -56,9 +59,6 @@ class Application
             // Do 500 layout...
             echo $e->getMessage();
         }
-
-        $response->send();
     }
-
 }
 

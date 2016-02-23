@@ -18,7 +18,7 @@ class Router
 
     /**
      * An associative array.
-     * Contains preliminary mapped routes.
+     * Contains preliminary mapped static routes.
      *
      * @var array
      */
@@ -26,7 +26,7 @@ class Router
 
     /**
      * Router constructor.
-     * @param array $routing_map Contains preliminary mapped routes from config.
+     * @param array $routing_map Contains preliminary mapped static routes from config.
      */
     public function __construct($routing_map = array())
     {

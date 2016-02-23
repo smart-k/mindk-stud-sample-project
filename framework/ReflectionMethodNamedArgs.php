@@ -9,7 +9,12 @@
 namespace Framework;
 
 
-class ReflectionMethodAssocParams extends \ReflectionMethod
+/**
+ * Class ReflectionMethodNamedArgs
+ * Providing reflection and invoking with named arguments.
+ * @package Framework
+ */
+class ReflectionMethodNamedArgs extends \ReflectionMethod
 {
     public function invokeArgs($object, Array $args = array())
     {
@@ -23,3 +28,4 @@ class ReflectionMethodAssocParams extends \ReflectionMethod
         return parent::invokeArgs($object, $parameters);
     }
 }
+
