@@ -42,7 +42,7 @@ class Application
                     $response = $actionReflection->invokeArgs($controller, $route['parameters']);
                     if ($response instanceof Response) {
                         // ...
-                        $response->send();
+
                     } else {
                         throw new BadResponseTypeException('Ooops');
                     }
@@ -59,6 +59,7 @@ class Application
             // Do 500 layout...
             echo $e->getMessage();
         }
+        $response->send();
     }
 }
 

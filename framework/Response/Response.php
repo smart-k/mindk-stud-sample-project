@@ -9,6 +9,11 @@
 namespace Framework\Response;
 
 
+/**
+ * Class Response
+ *
+ * @package Framework\Response
+ */
 class Response
 {
     /**
