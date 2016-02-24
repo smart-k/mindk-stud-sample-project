@@ -8,6 +8,7 @@
 
 namespace Framework;
 
+use Framework\Response\RedirectResponse;
 use Framework\Router\Router;
 use Framework\Response\Response;
 
@@ -42,7 +43,6 @@ class Application
                     $response = $actionReflection->invokeArgs($controller, $route['parameters']);
                     if ($response instanceof Response) {
                         // ...
-
                     } else {
                         throw new BadResponseTypeException('Ooops');
                     }
@@ -52,7 +52,8 @@ class Application
             }
         } catch (HttpNotFoundException $e) {
             // Render 404 or just show msg
-        } catch (AuthRequredException $e) {
+        } catch
+        (AuthRequredException $e) {
             // Reroute to login page
             //$response = new RedirectResponse(...);
         } catch (\Exception $e) {

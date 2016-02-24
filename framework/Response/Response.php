@@ -21,8 +21,8 @@ class Response
      */
     protected $headers = array();
 
-    public $code = 200;
     public $content = '';
+    public $code = 200;
     public $type = 'text/html';
 
     /**
@@ -94,13 +94,13 @@ class Response
      * Response constructor.
      *
      * @param mixed $content The response content
-     * @param string $type Content-Type
      * @param int $code The response status code
+     * @param string $type Content-Type
      */
-    public function __construct($content, $type, $code)
+    public function __construct($content, $code, $type)
     {
-        $this->code = $code;
         $this->content = $content;
+        $this->code = $code;
         $this->type = $type;
         $this->setHeader('Content-Type', $this->type);
     }

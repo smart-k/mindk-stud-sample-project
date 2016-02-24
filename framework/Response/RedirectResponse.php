@@ -18,15 +18,16 @@ class RedirectResponse extends Response
 {
     /**
      * RedirectResponse constructor.
+     * Sets the Location header.
      *
      * @param string $url The url
-     * @param string $type Content-Type
-     * @param string $method The redirect method
+     * @param string $content The response content
      * @param int $code The redirect status code
+     * @param string $type Content-Type
      */
-    public function __construct($url = '', $type = 'text/html', $method = 'location', $code = 302)
+    public function __construct($url, $content = '', $code = 302, $type = 'text/html')
     {
-        parent::__construct('', $type, $code);
-        $this->setHeader($method, $url);
+        parent::__construct($content, $code, $type);
+        $this->setHeader('Location', $url);
     }
 }

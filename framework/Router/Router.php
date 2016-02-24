@@ -120,13 +120,13 @@ class Router
 
 
     /**
-     * Build route.
+     * Generate route.
      *
      * @param string $route_name
      * @param array $params
      * @return string|null
      */
-    public function buildRoute($route_name, $params = null)
+    public function generateRoute($route_name, $params = null)
     {
         $route_found = !empty(self::$_map[$route_name]['pattern']) ? self::$_map[$route_name]['pattern'] : null;
 
