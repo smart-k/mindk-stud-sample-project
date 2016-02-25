@@ -8,10 +8,13 @@
 
 namespace Framework;
 
-use Framework\Response\RedirectResponse;
+use Framework\Controller\Controller;
 use Framework\Router\Router;
 use Framework\Response\Response;
-
+use Framework\Response\ResponseRedirect;
+use Framework\Exception\BadResponseTypeException;
+use Framework\Exception\HttpNotFoundException;
+use Framework\Exception\AuthRequredException;
 
 /**
  * Class Application
@@ -20,7 +23,6 @@ use Framework\Response\Response;
  */
 class Application
 {
-
     public function run()
     {
         $router = new Router(include('../app/config/routes.php'));
@@ -30,7 +32,7 @@ class Application
                 $controllerReflection = new \ReflectionClass($route['controller']);
 
                 if (!$controllerReflection->isSubclassOf('Framework\Controller\Controller')) {
-                    throw new \Exception("Unknown controller $controllerReflection");
+                    throw new \Exception("Unknown controller " . $controllerReflection->name);
                 }
 
                 $action = $route['action'] . 'Action';
@@ -42,25 +44,24 @@ class Application
                     $controller = $controllerReflection->newInstance();
                     $response = $actionReflection->invokeArgs($controller, $route['parameters']);
                     if ($response instanceof Response) {
-                        // ...
+                        $response->send();
                     } else {
-                        throw new BadResponseTypeException('Ooops');
+                        throw new BadResponseTypeException('Response type not known');
                     }
                 }
             } else {
                 throw new HttpNotFoundException('Route not found');
             }
         } catch (HttpNotFoundException $e) {
-            // Render 404 or just show msg
-        } catch
-        (AuthRequredException $e) {
-            // Reroute to login page
-            //$response = new RedirectResponse(...);
+            echo $e->getMessage(); // Render 404 or just show msg
+        } catch (AuthRequredException $e) {
+            $response = new ResponseRedirect(Controller::generateRoute('login')); // Reroute to login page
+            $response->send();
         } catch (\Exception $e) {
             // Do 500 layout...
             echo $e->getMessage();
         }
-        $response->send();
     }
+
 }
 

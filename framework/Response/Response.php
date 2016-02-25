@@ -21,10 +21,6 @@ class Response
      */
     protected $headers = array();
 
-    public $content = '';
-    public $code = 200;
-    public $type = 'text/html';
-
     /**
      * @var array An array of status codes and messages
      */
@@ -97,7 +93,7 @@ class Response
      * @param int $code The response status code
      * @param string $type Content-Type
      */
-    public function __construct($content, $code, $type)
+    public function __construct($content='', $code=200, $type='text/html')
     {
         $this->content = $content;
         $this->code = $code;

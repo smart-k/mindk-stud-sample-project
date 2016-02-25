@@ -9,15 +9,15 @@
 namespace Framework\Response;
 
 /**
- * Class RedirectResponse
+ * Class ResponseRedirect
  * Redirects to another uri/url via a Location header.
  *
  * @package Framework\Response
  */
-class RedirectResponse extends Response
+class ResponseRedirect extends Response
 {
     /**
-     * RedirectResponse constructor.
+     * ResponseRedirect constructor.
      * Sets the Location header.
      *
      * @param string $url The url

@@ -22,7 +22,7 @@ class Router
      *
      * @var array
      */
-    private static $_map = array();
+    public static $_map = array();
 
     /**
      * Router constructor.
@@ -119,23 +119,6 @@ class Router
     }
 
 
-    /**
-     * Generate route.
-     *
-     * @param string $route_name
-     * @param array $params
-     * @return string|null
-     */
-    public function generateRoute($route_name, $params = null)
-    {
-        $route_found = !empty(self::$_map[$route_name]['pattern']) ? self::$_map[$route_name]['pattern'] : null;
 
-        if ($route_found && !empty($params)) {
-            foreach ($params as $key => $value) {
-                $route_found = preg_replace('~\{' . $key . '\}~', $value, $route_found);
-            }
-        }
-        return $route_found;
-    }
 
 }
