@@ -21,7 +21,7 @@ use Framework\Exception\AuthRequredException;
  * Front Controller pattern implemented.
  * @package Framework
  */
-class Application
+class Application extends Controller
 {
     public function run()
     {
@@ -38,7 +38,7 @@ class Application
                 $action = $route['action'] . 'Action';
 
                 if ($controllerReflection->hasMethod($action)) {
-                    // ReflectionMethod::invokeArgs() has overloaded in class ReflectionMethodNamedArgs
+                    // ReflectionMethod::invokeArgs() has overloaded in class ReflectionMet  hodNamedArgs
                     // Now it provides invoking with named arguments
                     $actionReflection = new ReflectionMethodNamedArgs($route['controller'], $action);
                     $controller = $controllerReflection->newInstance();
@@ -53,13 +53,12 @@ class Application
                 throw new HttpNotFoundException('Route not found');
             }
         } catch (HttpNotFoundException $e) {
-            echo $e->getMessage(); // Render 404 or just show msg
+            $this->renderError(array('code' => '404', 'message' => $e->getMessage())); // Render 404
         } catch (AuthRequredException $e) {
-            $response = new ResponseRedirect(Controller::generateRoute('login')); // Reroute to login page
+            $response = new ResponseRedirect($this->generateRoute('login')); // Reroute to login page
             $response->send();
         } catch (\Exception $e) {
-            // Do 500 layout...
-            echo $e->getMessage();
+            $this->renderError(array('code' => '500', 'message' => $e->getMessage())); // // Do 500 layout...
         }
     }
 

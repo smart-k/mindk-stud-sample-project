@@ -48,8 +48,8 @@ class Router
         $uri = '/' . trim($uri, '/'); // Unified standard: /profile
 
         foreach (self::$_map as $route) {
-            $param_names = $this->parseParameterName($route); // Parse parameter's names from config's route pattern
-            $pattern = $this->prepare($route, $param_names); // Prepare root: taking into account pattern requirements for route parameters
+            $param_names = $this->_parseParameterName($route); // Parse parameter's names from config's route pattern
+            $pattern = $this->_prepare($route, $param_names); // Prepare root: taking into account pattern requirements for route parameters
 
             if (preg_match_all($pattern, $uri, $params)) {
 
@@ -82,7 +82,7 @@ class Router
      * @param string $route
      * @return array|null Route parameter's names
      */
-    private function parseParameterName($route)
+    private function _parseParameterName($route)
     {
         $trimmed_names = null;
 
@@ -102,7 +102,7 @@ class Router
      * @param array $names Route parameter's names from config.
      * @return string $pattern Prepared URI pattern with considering of pattern requirements for route parameters.
      */
-    private function prepare($route, $names)
+    private function _prepare($route, $names)
     {
         $pattern = $route['pattern'];
         if (!empty($names)) {
@@ -117,8 +117,4 @@ class Router
 
         return '~^' . $pattern . '$~';
     }
-
-
-
-
 }

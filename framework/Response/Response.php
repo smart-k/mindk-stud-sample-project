@@ -17,14 +17,14 @@ namespace Framework\Response;
 class Response
 {
     /**
-     * @var array $headers An array of response headers
+     * @var array $_headers An array of response headers
      */
-    protected $headers = array();
+    protected $_headers = array();
 
     /**
      * @var array An array of status codes and messages
      */
-    private static $msgs = array(
+    private static $_msgs = array(
         100 => 'Continue',
         101 => 'Switching Protocols',
         102 => 'Processing',
@@ -108,15 +108,15 @@ class Response
 
     public function setHeader($name, $value)
     {
-        $this->headers[$name] = $value;
+        $this->_headers[$name] = $value;
         return $this;
     }
 
     public function sendHeaders()
     {
-        header($_SERVER['SERVER_PROTOCOL'] . ' ' . $this->code . ' ' . self::$msgs[$this->code]);
+        header($_SERVER['SERVER_PROTOCOL'] . ' ' . $this->code . ' ' . self::$_msgs[$this->code]);
 
-        foreach ($this->headers as $key => $value) {
+        foreach ($this->_headers as $key => $value) {
             header(sprintf("%s: %s", $key, $value));
         }
         return $this;

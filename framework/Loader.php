@@ -46,7 +46,7 @@ class Loader
      */
     private function __construct()
     {
-        spl_autoload_register(array(__CLASS__, 'load'));
+        spl_autoload_register(array(__CLASS__, '_load'));
     }
 
     final private function __clone() // We do not need to copy objects so lock it.
@@ -94,7 +94,7 @@ class Loader
      * @param string $class Full class name.
      * @return mixed If success returns full file name, otherwise returns false.
      */
-    private function load($class)
+    private function _load($class)
     {
         /**
          * Namespace.
@@ -112,7 +112,7 @@ class Loader
             $relative_class = substr($class, $pos + 1);
 
             // Trying to load the file that matches namespace prefix and relative class name.
-            $file = self::loadFile($namespace, $relative_class);
+            $file = self::_loadFile($namespace, $relative_class);
             if ($file) {
                 return $file;
             }
@@ -129,7 +129,7 @@ class Loader
      * @param string $relative_class Relative class name.
      * @return mixed False if file was not loaded, otherwise returns the name of the loaded file.
      */
-    private function loadFile($namespace, $relative_class)
+    private function _loadFile($namespace, $relative_class)
     {
         // Checks whether this namespace prefix has any base directory.
         if (empty(self::$_namespaces[$namespace]) === true) {
@@ -147,7 +147,7 @@ class Loader
                 . '.php';
 
             // If file exists - load it.
-            if ($this->includeFile($file)) {
+            if ($this->_includeFile($file)) {
                 return $file;
             }
         }
@@ -162,7 +162,7 @@ class Loader
      * @param string $file File to load
      * @return bool True if file exists, otherwise - false
      */
-    private function includeFile($file)
+    private function _includeFile($file)
     {
         if (file_exists($file)) {
             include_once $file;
