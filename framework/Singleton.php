@@ -44,4 +44,17 @@ abstract class Singleton
             throw new \Exception('Class '.$name.'  not exist!');
         }
     }
+
+    /**
+     * Add already created singleton instance $_loaded_instances
+     * @param object $instance  Singleton instance
+     * @return object
+     */
+    public static function addInstance($instance)
+    {
+        $instanceReflection = new \ReflectionClass($instance);
+        if (empty(self::$_loaded_instances[$instanceReflection->name])) {
+                self::$_loaded_instances[$instanceReflection->name] = $instance;
+            }
+    }
 }

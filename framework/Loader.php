@@ -6,12 +6,12 @@
  * Date: 25.01.2016
  * Time: 8:58
  */
+use Framework\Singleton;
 
 /**
  * Class Loader
  * Autoloads classes from namespace's base directories.
  */
-
 class Loader
 {
     /**
@@ -89,12 +89,23 @@ class Loader
     }
 
     /**
+     * Gets a directory path for a given full class name.
+     * @param string $class Full class name.
+     * @return mixed If success returns directory path, otherwise returns false.
+     */
+    function getPath($class)
+    {
+        return $this->_load($class, true);
+    }
+
+    /**
      * Loads a file for a given full class name.
      *
      * @param string $class Full class name.
+     * @param boolean $get_only_path If true - only return path for file to be loaded
      * @return mixed If success returns full file name, otherwise returns false.
      */
-    private function _load($class)
+    private function _load($class, $get_only_path = false)
     {
         /**
          * Namespace.
@@ -112,8 +123,12 @@ class Loader
             $relative_class = substr($class, $pos + 1);
 
             // Trying to load the file that matches namespace prefix and relative class name.
-            $file = self::_loadFile($namespace, $relative_class);
+            $file = self::_loadFile($namespace, $relative_class, $get_only_path);
             if ($file) {
+                if ($get_only_path == true) {
+                    $pos = strrpos($file, '/');
+                    $file = substr($file, 0, $pos + 1);
+                }
                 return $file;
             }
 
@@ -122,14 +137,16 @@ class Loader
         }
     }
 
+
     /**
      * Loads the file that matches namespace prefix and relative class name.
      *
      * @param string $namespace Namespace.
      * @param string $relative_class Relative class name.
+     * @param boolean $get_only_path If true - only return path for file to be loaded
      * @return mixed False if file was not loaded, otherwise returns the name of the loaded file.
      */
-    private function _loadFile($namespace, $relative_class)
+    private function _loadFile($namespace, $relative_class, $get_only_path)
     {
         // Checks whether this namespace prefix has any base directory.
         if (empty(self::$_namespaces[$namespace]) === true) {
@@ -147,7 +164,7 @@ class Loader
                 . '.php';
 
             // If file exists - load it.
-            if ($this->_includeFile($file)) {
+            if ($this->_includeFile($file, $get_only_path)) {
                 return $file;
             }
         }
@@ -160,12 +177,16 @@ class Loader
      * If file exists then loads it.
      *
      * @param string $file File to load
+     * @param boolean $get_only_path If true - only return path for file to be loaded
      * @return bool True if file exists, otherwise - false
      */
-    private function _includeFile($file)
+    private function _includeFile($file, $get_only_path)
     {
         if (file_exists($file)) {
-            include_once $file;
+
+            if ($get_only_path == false) {
+                include_once $file;
+            }
             return true;
         }
         return false;
@@ -174,5 +195,8 @@ class Loader
 
 // Register base directory for namespace prefix Framework\ ..
 Loader::addNamespacePath('Framework\\', __DIR__);
+$instance = Loader::getInstance();
 // Register autoloader.
-Loader::getInstance();
+// Add Loader instance to the Singleton::_loaded_instances
+Singleton::addInstance($instance);
+
