@@ -25,9 +25,8 @@ class Application extends Controller
 {
     public function run()
     {
-        $router = new Router(include('../app/config/routes.php'));
-        $route = $router->parseRoute();
-        try {
+        $route = Router::getInstance()->setRoutingMap(include('../app/config/routes.php'))->parseRoute();
+         try {
             if (!empty($route)) {
                 $controllerReflection = new \ReflectionClass($route['controller']);
 
@@ -38,7 +37,7 @@ class Application extends Controller
                 $action = $route['action'] . 'Action';
 
                 if ($controllerReflection->hasMethod($action)) {
-                    // ReflectionMethod::invokeArgs() has overloaded in class ReflectionMet  hodNamedArgs
+                    // ReflectionMethod::invokeArgs() has overloaded in class ReflectionMethodNamedArgs
                     // Now it provides invoking with named arguments
                     $actionReflection = new ReflectionMethodNamedArgs($route['controller'], $action);
                     $controller = $controllerReflection->newInstance();

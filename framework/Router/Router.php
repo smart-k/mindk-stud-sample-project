@@ -8,12 +8,14 @@
 
 namespace Framework\Router;
 
+use Framework\Singleton;
+
 
 /**
  * Class Router
  * @package Framework\Router
  */
-class Router
+class Router extends Singleton
 {
 
     /**
@@ -22,16 +24,17 @@ class Router
      *
      * @var array
      */
-    public static $_map = array();
+    private static $_map = array();
 
     /**
-     * Router constructor.
-     * @param array $routing_map Contains preliminary mapped static routes from config.
+     * Set preliminary mapped static routes from config
+     *
+     * @param array $routing_map Contains preliminary mapped static routes from config
      */
-    public function __construct($routing_map = array())
+    public function setRoutingMap($routing_map = array())
     {
-
         self::$_map = $routing_map;
+        return $this;
     }
 
     /**
@@ -116,5 +119,24 @@ class Router
         }
 
         return '~^' . $pattern . '$~';
+    }
+
+    /**
+     * Build route.
+     *
+     * @param string $route_name
+     * @param array $params
+     * @return string|null
+     */
+    public function buildRoute($route_name, $params = null)
+    {
+        $route_build = !empty(Router::$_map[$route_name]['pattern']) ? Router::$_map[$route_name]['pattern'] : null;
+
+        if ($route_build && !empty($params)) {
+            foreach ($params as $key => $value) {
+                $route_build = preg_replace('~\{' . $key . '\}~', $value, $route_build);
+            }
+        }
+        return $route_build;
     }
 }

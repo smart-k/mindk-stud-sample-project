@@ -61,14 +61,7 @@ class Controller
      */
     public function generateRoute($route_name, $params = null)
     {
-        $route_generated = !empty(Router::$_map[$route_name]['pattern']) ? Router::$_map[$route_name]['pattern'] : null;
-
-        if ($route_generated && !empty($params)) {
-            foreach ($params as $key => $value) {
-                $route_generated = preg_replace('~\{' . $key . '\}~', $value, $route_generated);
-            }
-        }
-        return $route_generated;
+       return Router::getInstance()->buildRoute($route_name, $params);
     }
 
     private function _renderPartial($file, $variables = array(), $output = true)
