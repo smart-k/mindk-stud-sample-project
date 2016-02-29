@@ -11,5 +11,5 @@ namespace Framework\Exception;
 
 class HttpNotFoundException extends \Exception
 {
-
+    protected $code = 404;
 }

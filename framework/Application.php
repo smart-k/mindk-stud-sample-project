@@ -26,7 +26,7 @@ class Application extends Controller
     public function run()
     {
         $route = Router::getInstance()->setRoutingMap(include('../app/config/routes.php'))->parseRoute();
-         try {
+        try {
             if (!empty($route)) {
                 $controllerReflection = new \ReflectionClass($route['controller']);
 
@@ -52,12 +52,13 @@ class Application extends Controller
                 throw new HttpNotFoundException('Route not found');
             }
         } catch (HttpNotFoundException $e) {
-            $this->renderError(array('code' => '404', 'message' => $e->getMessage())); // Render 404
+            $code = (string)$e->getCode();
+            $this->render($code . '.html', array('code' => $code, 'message' => $e->getMessage())); // Render 404
         } catch (AuthRequredException $e) {
             $response = new ResponseRedirect($this->generateRoute('login')); // Reroute to login page
             $response->send();
         } catch (\Exception $e) {
-            $this->renderError(array('code' => '500', 'message' => $e->getMessage())); // // Do 500 layout...
+            $this->render('500.html', array('code' => $e->getCode(), 'message' => $e->getMessage())); // // Do 500 layout...
         }
     }
 

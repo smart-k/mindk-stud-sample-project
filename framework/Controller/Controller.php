@@ -9,24 +9,14 @@
 namespace Framework\Controller;
 
 use Framework\Response\ResponseRedirect;
-use Framework\Router\Router;
 use Framework\Response\Response;
+use Framework\Router\Router;
+use Framework\ObjectPool;
+use Framework\Renderer\Renderer;
 
 
-class Controller
+abstract class Controller
 {
-    public $tplPath;
-    public $tplControllerPath;
-
-    /**
-     * Controller constructor.
-     */
-    public function __construct()
-    {
-        $this->tplPath = __DIR__ . '/../../src/Blog/views/';
-        $this->tplControllerPath = __DIR__ . '/../../src/Blog/views/' . str_replace('Controller', '', get_called_class()) . '/';
-    }
-
     function __call($methodName, $args = array())
     {
         if (method_exists($this, $methodName))
@@ -44,7 +34,7 @@ class Controller
      * @param   int $code The redirect status code
      * @return  object
      */
-    public static function redirect($url, $content = '', $code = 302)
+    static function redirect($url, $content = '', $code = 302)
     {
         if (empty($url)) {
             throw new \InvalidArgumentException('Cannot redirect to an empty URL.');
@@ -59,58 +49,39 @@ class Controller
      * @param array $params
      * @return string|null
      */
-    public function generateRoute($route_name, $params = null)
+    function generateRoute($route_name, $params = null)
     {
-       return Router::getInstance()->buildRoute($route_name, $params);
-    }
-
-    private function _renderPartial($file, $variables = array(), $output = true)
-    {
-        extract($variables);
-
-        if (file_exists($file)) {
-            if (!$output)
-                ob_start();
-            include $file;
-            return !$output ? ob_get_clean() : true;
-        } else
-            throw new \Exception('File ' . $file . ' not found');
+        return Router::getInstance()->buildRoute($route_name, $params);
     }
 
     /**
-     * renderPartial Available in the controller to display the template file.
+     * Rendering method
      *
-     * @params $filename Template name in the folder views / controller name / {}. php
-     * @params $variables Array keys will be available in the template as variables with the same name
-     * @params $output - If you specify false, the data from the template will be displayed in the main stream
-     */
-    public function renderPartial($filename, $variables = array(), $output = true)
-    {
-        $file = $this->tplControllerPath . $filename . '.php';
-        return $this->_renderPartial($file, $variables, $output);
-    }
-
-    /**
-     * Performs the complete withdrawal of the page to the screen.
-     * Thus, it includes the contents of the template file $filename
+     * @param   string $layout Layout file name
+     * @param   string $main_template_file
+     * @param   mixed $data Data
      *
-     * @params $filename Template name in the folder views / controller name / {}. php
-     * @params $variables Array keys will be available in the template as variables with the same name
-     * @params $output - If you specify false, the data from the template will be displayed in the main stream
-
+     * @return  Response
      */
-    public function render($filename, $variables = array(), $output = true)
+    function render($layout, $data = array())
     {
-        $this->renderPartial($filename, $variables, $output);
+        $class = get_called_class();
+
+        if ($class === 'Framework\Application') {
+            $tplPath = dirname(__FILE__) . '/../../src/Blog/views/';
+            $main_template = $tplPath;
+        } else {
+            $main_template = ObjectPool::getInstance('Framework\Loader')->getPath($class) . '/../views/';
+            $tplPath = $main_template . str_replace('Controller', '', $class) . '/';
+        }
+        $template_path = realpath($main_template . 'layout.html.php');
+        $full_path = realpath($tplPath . $layout . '.php');
+
+        $renderer = Renderer::getInstance(); // Try to define renderer like a service. e.g.: Service::get('renderer');
+
+        $content = $renderer->setMainTemplate($template_path)->render($full_path, $data, false);
+
+        return new Response($content);
     }
 
-    /**
-     * Performs the complete withdrawal of the error page to the screen.
-     */
-    public function renderError($variables = array())
-    {
-        $html = $this->_renderPartial($this->tplPath . $variables['code'] . '.html.php', $variables, false);
-        echo $html;
-        return new Response($variables['message'], $variables['code']);
-    }
 }

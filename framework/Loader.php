@@ -95,7 +95,7 @@ class Loader
      */
     function getPath($class)
     {
-        return $this->_load($class, true);
+        return rtrim($this->_load($class, true), '/');
     }
 
     /**
