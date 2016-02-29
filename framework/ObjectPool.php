@@ -10,7 +10,7 @@ namespace Framework;
 
 /**
  * Class ObjectPool
- * Loads different components via the Object pool pattern
+ * Load different components via the Object pool pattern
  * @package Framework
  */
 abstract class ObjectPool
@@ -25,36 +25,37 @@ abstract class ObjectPool
     private static $_loaded_instances = array();
 
     /**
-     * Loads the class instance.
+     * Load the class instance.
      *
-     * @param string $class_name
-     * @return object
-     *
+     * @param boolean|string $class_name Full class name if present
+     * @param array $args Arguments if present
+     * @return object Return class instance
+     * @throws \Exception If class does not exist
      */
-    public static function getInstance($class_name = false)
+    public static function get($class_name = false, $args = array())
     {
         $name = ($class_name === false) ? get_called_class() : $class_name;
 
         if (class_exists($name)) {
             if (empty(self::$_loaded_instances[$name])) {
-                self::$_loaded_instances[$name] = new $name();
+                self::$_loaded_instances[$name] = new $name($args);
             }
             return self::$_loaded_instances[$name];
         } else {
-            throw new \Exception('Class '.$name.'  not exist!');
+            throw new \Exception('Class ' . $name . '  not exist!');
         }
     }
 
     /**
      * Add already created singleton instance into array $_loaded_instances
-     * @param object $instance  Singleton instance
+     * @param object $instance Singleton instance
      * @return object
      */
-    public static function addInstance($instance)
+    public static function add($instance)
     {
         $instanceReflection = new \ReflectionClass($instance);
         if (empty(self::$_loaded_instances[$instanceReflection->name])) {
-                self::$_loaded_instances[$instanceReflection->name] = $instance;
-            }
+            self::$_loaded_instances[$instanceReflection->name] = $instance;
+        }
     }
 }

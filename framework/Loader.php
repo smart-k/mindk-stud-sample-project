@@ -10,7 +10,7 @@ use Framework\ObjectPool;
 
 /**
  * Class Loader
- * Autoloads classes from namespace's base directories.
+ * Autoload classes from namespace's base directories.
  */
 class Loader
 {
@@ -24,7 +24,7 @@ class Loader
     static private $_namespaces = array();
 
     /**
-     * Keeps instance of the class Loader.
+     * Keep instance of the class Loader.
      * @var Loader|object
      */
     static private $_instance = null;
@@ -42,7 +42,7 @@ class Loader
 
     /**
      * Loader constructor.
-     * Registers autoloader in the stack SPL.
+     * Register autoloader in the stack SPL.
      */
     private function __construct()
     {
@@ -54,7 +54,7 @@ class Loader
     }
 
     /**
-     * Adds the base directory for the namespace.
+     * Add the base directory for the namespace.
      *
      * @param string $namespace Namespace prefix.
      * @param string $base_dir Base directory for the class files of the namespace.
@@ -89,7 +89,7 @@ class Loader
     }
 
     /**
-     * Gets a directory path for a given full class name.
+     * Get a directory path for a given full class name.
      * @param string $class Full class name.
      * @return mixed If success returns directory path, otherwise returns false.
      */
@@ -99,7 +99,7 @@ class Loader
     }
 
     /**
-     * Loads a file for a given full class name.
+     * Load a file for a given full class name.
      *
      * @param string $class Full class name.
      * @param boolean $get_only_path If true - only return path for file to be loaded
@@ -139,7 +139,7 @@ class Loader
 
 
     /**
-     * Loads the file that matches namespace prefix and relative class name.
+     * Load the file that matches namespace prefix and relative class name.
      *
      * @param string $namespace Namespace.
      * @param string $relative_class Relative class name.
@@ -197,6 +197,6 @@ class Loader
 Loader::addNamespacePath('Framework\\', __DIR__);
 $instance = Loader::getInstance();
 // Register autoloader.
-// Add Loader instance to the Singleton::_loaded_instances
-ObjectPool::addInstance($instance);
+// Add Loader instance to the ObjectPool::_loaded_instances
+ObjectPool::add($instance);
 

@@ -26,13 +26,13 @@ abstract class Controller
     }
 
     /**
-     * Redirects to another url.
+     * Redirect to another url.
      * Can redirect via a Location header
      *
      * @param   string $url The url
      * @param   string $content The response content
      * @param   int $code The redirect status code
-     * @return  object
+     * @return  ResponseRedirect
      */
     static function redirect($url, $content = '', $code = 302)
     {
@@ -51,13 +51,13 @@ abstract class Controller
      */
     function generateRoute($route_name, $params = null)
     {
-        return Router::getInstance()->buildRoute($route_name, $params);
+        return Router::get()->buildRoute($route_name, $params);
     }
 
     /**
      * Rendering method
      *
-     * @param   string $layout Layout file name
+     * @param   string $layout Layout filename
      * @param   string $main_template_file
      * @param   mixed $data Data
      *
@@ -67,17 +67,17 @@ abstract class Controller
     {
         $class = get_called_class();
 
-        if ($class === 'Framework\Application') {
+        if ($class === 'Framework\Application') {  // Exception rendering (render has been invoked from Application)
             $tplPath = dirname(__FILE__) . '/../../src/Blog/views/';
-            $main_template = $tplPath;
         } else {
-            $main_template = ObjectPool::getInstance('Framework\Loader')->getPath($class) . '/../views/';
-            $tplPath = $main_template . str_replace('Controller', '', $class) . '/';
+            $tplPath = ObjectPool::get('Framework\Loader')->getPath($class) .
+                '/../views/' . str_replace('Controller', '', $class) . '/';
         }
-        $template_path = realpath($main_template . 'layout.html.php');
-        $full_path = realpath($tplPath . $layout . '.php');
 
-        $content = Renderer::getInstance()->setMainTemplate($template_path)->render($full_path, $data, false); // Try to define renderer like a service. e.g.: Service::get('renderer');
+        $full_path = realpath($tplPath . $layout . '.php');
+// Try to define renderer like a service. e.g.: Service::get('renderer');
+        $content = ObjectPool::get('Framework\Renderer\Renderer',
+            include(__DIR__ . '/../../app/config/config.php'))->render($full_path, $data, false);
         return new Response($content);
     }
 

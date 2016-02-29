@@ -18,7 +18,7 @@ class ResponseRedirect extends Response
 {
     /**
      * ResponseRedirect constructor.
-     * Sets the Location header.
+     * Set the Location header.
      *
      * @param string $url The url
      * @param string $content The response content

@@ -17,28 +17,26 @@ use Framework\ObjectPool;
  */
 class Router extends ObjectPool
 {
-
     /**
      * An associative array.
-     * Contains preliminary mapped static routes.
+     * Contains preliminary mapped routes.
      *
      * @var array
      */
-    private static $_map = array();
+    protected static $_map = array();
 
     /**
-     * Set preliminary mapped static routes from config
+     * Router constructor.
      *
-     * @param array $routing_map Contains preliminary mapped static routes from config
+     * @param array $routing_map Contains preliminary mapped routes from config
      */
-    public function setRoutingMap($routing_map = array())
-    {
+    public function __construct($routing_map = array()){
+
         self::$_map = $routing_map;
-        return $this;
     }
 
     /**
-     * Parces route.
+     * Parse route.
      *
      * @param $url
      * @return array $route_found An associative array of route's parameters.

@@ -20,16 +20,15 @@ class Renderer extends ObjectPool
     /**
      * @var string  Main wrapper template file location
      */
-    private $_main_template = '';
+    protected $_main_template = '';
 
     /**
-     * Set main wrapper template file location
-     * @param $main_template_file
+     * Renderer constructor.
+     * @param array $config
      */
-    function setMainTemplate($main_template_file)
+    public function __construct($config = array())
     {
-        $this->_main_template = $main_template_file;
-        return $this;
+        $this->_main_template = $config['main_layout'];
     }
 
     /**

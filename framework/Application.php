@@ -25,7 +25,7 @@ class Application extends Controller
 {
     public function run()
     {
-        $route = Router::getInstance()->setRoutingMap(include('../app/config/routes.php'))->parseRoute();
+        $route = ObjectPool::get('Framework\Router\Router', include('../app/config/routes.php'))->parseRoute();
         try {
             if (!empty($route)) {
                 $controllerReflection = new \ReflectionClass($route['controller']);
