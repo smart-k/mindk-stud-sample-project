@@ -6,7 +6,7 @@
  * Date: 25.01.2016
  * Time: 8:58
  */
-use Framework\Singleton;
+use Framework\ObjectPool;
 
 /**
  * Class Loader
@@ -198,5 +198,5 @@ Loader::addNamespacePath('Framework\\', __DIR__);
 $instance = Loader::getInstance();
 // Register autoloader.
 // Add Loader instance to the Singleton::_loaded_instances
-Singleton::addInstance($instance);
+ObjectPool::addInstance($instance);
 

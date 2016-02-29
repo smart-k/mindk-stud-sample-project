@@ -9,11 +9,11 @@
 namespace Framework;
 
 /**
- * Class Singleton
+ * Class ObjectPool
  * Loads different components via the Object pool pattern
  * @package Framework
  */
-abstract class Singleton
+abstract class ObjectPool
 {
     /**
      * An associative array.
@@ -46,7 +46,7 @@ abstract class Singleton
     }
 
     /**
-     * Add already created singleton instance $_loaded_instances
+     * Add already created singleton instance into array $_loaded_instances
      * @param object $instance  Singleton instance
      * @return object
      */

@@ -8,14 +8,14 @@
 
 namespace Framework\Router;
 
-use Framework\Singleton;
+use Framework\ObjectPool;
 
 
 /**
  * Class Router
  * @package Framework\Router
  */
-class Router extends Singleton
+class Router extends ObjectPool
 {
 
     /**
