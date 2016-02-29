@@ -58,13 +58,12 @@ class Renderer extends ObjectPool
      */
     public function render($template_path, $data = array(), $wrap = true)
     {
-
         extract($data);
         // @TODO: provide all required vars or closures...
         if (file_exists($template_path)) {
             ob_start();
             include($template_path);
-            $content = ob_end_clean();
+            $content = ob_get_clean();
         } else {
             throw new \Exception('File ' . $template_path . ' not found');
         }
@@ -76,18 +75,6 @@ class Renderer extends ObjectPool
                 throw new \Exception('File ' . $this->_main_template . ' not found');
             }
         }
-        echo $content;
         return $content;
     }
-
-
-//    /**
-//     * Performs the complete withdrawal of the error page to the screen.
-//     */
-//    public function renderError($variables = array())
-//    {
-//        $html = $this->_renderPartial($this->tplPath . $variables['code'] . '.html.php', $variables, false);
-//        echo $html;
-//        return new Response($variables['message'], $variables['code']);
-//    }
 }

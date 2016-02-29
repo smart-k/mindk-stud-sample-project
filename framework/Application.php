@@ -43,7 +43,7 @@ class Application extends Controller
                     $controller = $controllerReflection->newInstance();
                     $response = $actionReflection->invokeArgs($controller, $route['parameters']);
                     if ($response instanceof Response) {
-                        $response->send();
+                    // ...
                     } else {
                         throw new BadResponseTypeException('Response type not known');
                     }
@@ -53,13 +53,14 @@ class Application extends Controller
             }
         } catch (HttpNotFoundException $e) {
             $code = (string)$e->getCode();
-            $this->render($code . '.html', array('code' => $code, 'message' => $e->getMessage())); // Render 404
+            $response = $this->render($code . '.html', array('code' => $code, 'message' => $e->getMessage())); // Render 404
         } catch (AuthRequredException $e) {
             $response = new ResponseRedirect($this->generateRoute('login')); // Reroute to login page
-            $response->send();
         } catch (\Exception $e) {
-            $this->render('500.html', array('code' => $e->getCode(), 'message' => $e->getMessage())); // // Do 500 layout...
+            $code = (string)$e->getCode();
+            $response = $this->render('500.html', array('code' => $code, 'message' => $e->getMessage())); // // Do 500 layout...
         }
+        $response->send();
     }
 
 }

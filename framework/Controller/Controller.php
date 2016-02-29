@@ -77,10 +77,7 @@ abstract class Controller
         $template_path = realpath($main_template . 'layout.html.php');
         $full_path = realpath($tplPath . $layout . '.php');
 
-        $renderer = Renderer::getInstance(); // Try to define renderer like a service. e.g.: Service::get('renderer');
-
-        $content = $renderer->setMainTemplate($template_path)->render($full_path, $data, false);
-
+        $content = Renderer::getInstance()->setMainTemplate($template_path)->render($full_path, $data, false); // Try to define renderer like a service. e.g.: Service::get('renderer');
         return new Response($content);
     }
 
