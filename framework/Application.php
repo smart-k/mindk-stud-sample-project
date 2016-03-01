@@ -29,7 +29,7 @@ class Application extends Controller
     {
         $this->_setServices();
 
-        $route = Service::get('router')->parseRoute();
+        $route = Service::get('router')->parseRoute('');
         try {
             if (!empty($route)) {
                 $controllerReflection = new \ReflectionClass($route['controller']);
