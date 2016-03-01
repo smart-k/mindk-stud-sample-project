@@ -9,12 +9,12 @@
 namespace Framework;
 
 use Framework\Controller\Controller;
-use Framework\Router\Router;
 use Framework\Response\Response;
 use Framework\Response\ResponseRedirect;
 use Framework\Exception\BadResponseTypeException;
 use Framework\Exception\HttpNotFoundException;
 use Framework\Exception\AuthRequredException;
+
 
 /**
  * Class Application
@@ -23,9 +23,11 @@ use Framework\Exception\AuthRequredException;
  */
 class Application extends Controller
 {
-    public function run()
+    function run()
     {
-        $route = ObjectPool::get('Framework\Router\Router', include('../app/config/routes.php'))->parseRoute();
+        $this->_setServices();
+
+        $route = Service::get('router')->parseRoute();
         try {
             if (!empty($route)) {
                 $controllerReflection = new \ReflectionClass($route['controller']);
@@ -43,7 +45,7 @@ class Application extends Controller
                     $controller = $controllerReflection->newInstance();
                     $response = $actionReflection->invokeArgs($controller, $route['parameters']);
                     if ($response instanceof Response) {
-                    // ...
+                        // ...
                     } else {
                         throw new BadResponseTypeException('Response type not known');
                     }
@@ -61,6 +63,16 @@ class Application extends Controller
             $response = $this->render('500.html', array('code' => $code, 'message' => $e->getMessage())); // // Do 500 layout...
         }
         $response->send();
+    }
+
+    /**
+     * Set required services
+     */
+    private function _setServices()
+    {
+        Service::set('router', ObjectPool::get('Framework\Router\Router', include('../app/config/routes.php')));
+        Service::set('loader', ObjectPool::get('Loader'));
+        Service::set('renderer', ObjectPool::get('Framework\Renderer\Renderer', include(__DIR__ . '/../app/config/config.php')));
     }
 
 }

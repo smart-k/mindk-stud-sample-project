@@ -10,9 +10,7 @@ namespace Framework\Controller;
 
 use Framework\Response\ResponseRedirect;
 use Framework\Response\Response;
-use Framework\Router\Router;
-use Framework\ObjectPool;
-use Framework\Renderer\Renderer;
+use Framework\Service;
 
 
 abstract class Controller
@@ -51,7 +49,7 @@ abstract class Controller
      */
     function generateRoute($route_name, $params = null)
     {
-        return Router::get()->buildRoute($route_name, $params);
+        return Service::get('router')->buildRoute($route_name, $params);
     }
 
     /**
@@ -66,18 +64,13 @@ abstract class Controller
     function render($layout, $data = array())
     {
         $class = get_called_class();
-
-        if ($class === 'Framework\Application') {  // Exception rendering (render has been invoked from Application)
+        if ($class === 'Framework\Application') {  // Exception rendering (method render has been invoked in Application controller)
             $tplPath = dirname(__FILE__) . '/../../src/Blog/views/';
         } else {
-            $tplPath = ObjectPool::get('Framework\Loader')->getPath($class) .
-                '/../views/' . str_replace('Controller', '', $class) . '/';
+            $tplPath = Service::get('loader')->getPath($class) . '/../views/' . str_replace('Controller', '', $class) . '/';
         }
-
         $full_path = realpath($tplPath . $layout . '.php');
-// Try to define renderer like a service. e.g.: Service::get('renderer');
-        $content = ObjectPool::get('Framework\Renderer\Renderer',
-            include(__DIR__ . '/../../app/config/config.php'))->render($full_path, $data, false);
+        $content = Service::get('renderer')->render($full_path, $data, false); // Try to define renderer like a service. e.g.: Service::get('renderer');
         return new Response($content);
     }
 
