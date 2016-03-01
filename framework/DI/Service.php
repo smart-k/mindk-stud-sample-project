@@ -6,7 +6,7 @@
  * Time: 9:10
  */
 
-namespace Framework;
+namespace Framework\DI;
 
 
 /**

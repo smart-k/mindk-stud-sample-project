@@ -10,7 +10,7 @@ namespace Framework\Controller;
 
 use Framework\Response\ResponseRedirect;
 use Framework\Response\Response;
-use Framework\Service;
+use Framework\DI\Service;
 
 
 abstract class Controller
