@@ -29,7 +29,7 @@ class Application extends Controller
     {
         $this->_setServices();
 
-        $route = Service::get('router')->parseRoute('');
+        $route = Service::get('router')->parseRoute();
         try {
             if (!empty($route)) {
                 $controllerReflection = new \ReflectionClass($route['controller']);
@@ -61,8 +61,8 @@ class Application extends Controller
         } catch (AuthRequredException $e) {
             $response = new ResponseRedirect($this->generateRoute('login')); // Reroute to login page
         } catch (\Exception $e) {
-            $code = (string)$e->getCode();
-            $response = $this->render('500.html', array('code' => $code, 'message' => $e->getMessage())); // // Do 500 layout...
+            $code = '500';
+            $response = $this->render($code . '.html', array('code' => (string)$e->getCode(), 'message' => $e->getMessage())); // Do 500 layout...
         }
         $response->send();
     }
@@ -72,7 +72,7 @@ class Application extends Controller
      */
     private function _setServices()
     {
-        Service::set('router', ObjectPool::get('Framework\Router\Router', include('../app/config/routes.php')));
+        Service::set('router', ObjectPool::get('Framework\Router\Router', include(__DIR__ .'/../app/config/routes.php')));
         Service::set('loader', ObjectPool::get('Loader'));
         Service::set('renderer', ObjectPool::get('Framework\Renderer\Renderer', include(__DIR__ . '/../app/config/config.php')));
     }

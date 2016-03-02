@@ -21,6 +21,17 @@ class Renderer extends ObjectPool
      * @var string  Main wrapper template file location
      */
     protected $_main_template = '';
+    protected $_error_template = '';
+
+    /**
+     * @return string Path to error template directory
+     */
+    public function getErrorTemplatePath()
+    {
+        $pos = strrpos($this->_error_template, '/');
+        $template_path = substr($this->_error_template, 0, $pos + 1);
+        return $template_path;
+    }
 
     /**
      * Renderer constructor.
@@ -29,6 +40,7 @@ class Renderer extends ObjectPool
     public function __construct($config = array())
     {
         $this->_main_template = $config['main_layout'];
+        $this->_error_template = $config['error_500'];
     }
 
     /**

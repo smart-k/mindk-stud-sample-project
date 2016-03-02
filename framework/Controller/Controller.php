@@ -65,7 +65,7 @@ abstract class Controller
     {
         $class = get_called_class();
         if ($class === 'Framework\Application') {  // Exception rendering (method render has been invoked in Application controller)
-            $tplPath = dirname(__FILE__) . '/../../src/Blog/views/';
+            $tplPath = Service::get('renderer')->getErrorTemplatePath();
         } else {
             $tplPath = Service::get('loader')->getPath($class) . '/../views/' . str_replace('Controller', '', $class) . '/';
         }
