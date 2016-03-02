@@ -64,11 +64,12 @@ class Renderer extends ObjectPool
     /**
      * Render specified template file with data provided
      *
-     * @param   string  Template file path (full)
-     * @param   mixed   Data array
+     * @param   string $template_path Template file path (full)
+     * @param   array  $data Data array
      * @param   bool    To be wrapped with main template if true
      *
-     * @return  text/html
+     * @return  text/html $content
+     * @throws \Exception If template file not found
      */
     public function render($template_path, $data = array(), $wrap = true)
     {
@@ -99,6 +100,7 @@ class Renderer extends ObjectPool
      * @param string $controller_name
      * @param string $action
      * @param array $data
+     *
      * @throws \Exception If obtained controller is not subclass of base controller.
      */
     private function _widget($controller_name, $action, $data = array())
