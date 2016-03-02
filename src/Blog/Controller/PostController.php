@@ -27,18 +27,18 @@ class PostController extends Controller
 
     public function getPostAction($id)
     {
-        return new Response('Post: #'.$id);
+        return new Response('Post: #' . $id);
     }
 
     public function addAction()
     {
         if ($this->getRequest()->isPost()) {
-            try{
-                $post          = new Post();
-                $date          = new \DateTime();
-                $post->title   = $this->getRequest()->post('title');
+            try {
+                $post = new Post();
+                $date = new \DateTime();
+                $post->title = $this->getRequest()->post('title');
                 $post->content = trim($this->getRequest()->post('content'));
-                $post->date    = $date->format('Y-m-d H:i:s');
+                $post->date = $date->format('Y-m-d H:i:s');
 
                 $validator = new Validator($post);
                 if ($validator->isValid()) {
@@ -47,14 +47,14 @@ class PostController extends Controller
                 } else {
                     $error = $validator->getErrors();
                 }
-            } catch(DatabaseException $e){
+            } catch (DatabaseException $e) {
                 $error = $e->getMessage();
             }
         }
 
         return $this->render(
-                    'add.html',
-                    array('action' => $this->generateRoute('add_post'), 'errors' => isset($error)?$error:null)
+            'add.html',
+            array('action' => $this->generateRoute('add_post'), 'errors' => isset($error) ? $error : null)
         );
     }
 
