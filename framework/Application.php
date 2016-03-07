@@ -24,18 +24,22 @@ use Framework\DI\Service;
  */
 class Application extends Controller
 {
-   /**
+    /**
      * Application constructor.
      * Set required services.
      *
      * @param string $config_path
      */
-    public function __construct($config_path)
+    function __construct($config_path)
     {
         Service::set('config', include($config_path));
         Service::set('router', ObjectPool::get('Framework\Router\Router', Service::get('config')['routes']));
         Service::set('loader', ObjectPool::get('Loader'));
         Service::set('renderer', ObjectPool::get('Framework\Renderer\Renderer', Service::get('config')));
+        extract(Service::get('config')['pdo']);
+        $dns .= ';charset=latin1';
+        $db = new \PDO($dns, $user, $password);
+        Service::set('db', $db);
     }
 
     function run()

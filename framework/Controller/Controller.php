@@ -56,7 +56,6 @@ abstract class Controller
      * Rendering method
      *
      * @param   string $layout Layout filename
-     * @param   string $main_template_file
      * @param   mixed $data Data
      *
      * @return  Response
@@ -67,11 +66,11 @@ abstract class Controller
         if ($class === 'Framework\Application') {  // Exception rendering (method render has been invoked in Application controller)
             $tplPath = Service::get('renderer')->getErrorTemplatePath();
         } else {
-            $tplPath = Service::get('loader')->getPath($class) . '/../views/' . str_replace('Controller', '', $class) . '/';
+            $pos = strrpos($class, '\\');
+            $tplPath = Service::get('loader')->getPath($class) . '/../views/' . str_replace('Controller', '', substr($class, $pos + 1)) . '/';
         }
         $full_path = realpath($tplPath . $layout . '.php');
-        $content = Service::get('renderer')->render($full_path, $data, false); // Try to define renderer like a service. e.g.: Service::get('renderer');
+        $content = Service::get('renderer')->render($full_path, $data, false);
         return new Response($content);
     }
-
 }

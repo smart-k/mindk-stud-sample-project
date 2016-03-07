@@ -93,7 +93,7 @@ class Response
      * @param int $code The response status code
      * @param string $type Content-Type
      */
-    public function __construct($content='', $code=200, $type='text/html')
+    function __construct($content = '', $code = 200, $type = 'text/html')
     {
         $this->content = $content;
         $this->code = $code;
@@ -101,18 +101,18 @@ class Response
         $this->setHeader('Content-Type', $this->type);
     }
 
-    public function send()
+    function send()
     {
         $this->sendHeaders()->sendBody();
     }
 
-    public function setHeader($name, $value)
+    function setHeader($name, $value)
     {
         $this->_headers[$name] = $value;
         return $this;
     }
 
-    public function sendHeaders()
+    function sendHeaders()
     {
         header($_SERVER['SERVER_PROTOCOL'] . ' ' . $this->code . ' ' . self::$_msgs[$this->code]);
 
@@ -122,7 +122,7 @@ class Response
         return $this;
     }
 
-    public function sendBody()
+    function sendBody()
     {
         echo $this->content;
     }

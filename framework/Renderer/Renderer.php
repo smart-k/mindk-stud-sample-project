@@ -29,7 +29,7 @@ class Renderer extends ObjectPool
     /**
      * @return string Path to error template directory
      */
-    public function getErrorTemplatePath()
+    function getErrorTemplatePath()
     {
         $pos = strrpos($this->_error_template, '/');
         $template_path = substr($this->_error_template, 0, $pos + 1);
@@ -40,7 +40,7 @@ class Renderer extends ObjectPool
      * Renderer constructor.
      * @param array $config
      */
-    public function __construct($config = array())
+    function __construct($config = array())
     {
         $this->_main_template = $config['main_layout'];
         $this->_error_template = $config['error_500'];
@@ -65,17 +65,44 @@ class Renderer extends ObjectPool
      * Render specified template file with data provided
      *
      * @param   string $template_path Template file path (full)
-     * @param   array  $data Data array
+     * @param   array $data Data array
      * @param   bool    To be wrapped with main template if true
      *
      * @return  text/html $content
      * @throws \Exception If template file not found
      */
-    public function render($template_path, $data = array(), $wrap = true)
+    function render($template_path, $data = array(), $wrap = true)
     {
-        $data['include'] = '$this->_widget';
+        /**
+         * Widget for view template (lambda-function)
+         *
+         * @param string $controller_name
+         * @param string $action
+         * @param array $data
+         * @throws \Exception If obtained controller is not subclass of base controller.
+         */
+        $data['include'] = function ($controller_name, $action, $data = array()) {
+            $controllerReflection = new \ReflectionClass($controller_name);
+            if (!$controllerReflection->isSubclassOf('Framework\Controller\Controller')) {
+                throw new \Exception("Unknown controller " . $controllerReflection->name);
+            }
+            $action .= 'Action';
+            if ($controllerReflection->hasMethod($action)) {
+                // ReflectionMethod::invokeArgs() has overloaded in class ReflectionMethodNamedArgs
+                // Now it provides invoking with named arguments
+                $actionReflection = new ReflectionMethodNamedArgs($controller_name, $action);
+                $controller = $controllerReflection->newInstance();
+                $response = $actionReflection->invokeArgs($controller, $data);
+                if ($response instanceof Response) {
+                    echo htmlspecialchars_decode($response->content);
+                } else {
+                    throw new BadResponseTypeException('Response type not known');
+                }
+            }
+        };
+
         extract($data);
-        // @TODO: provide all required vars or closures...
+
         if (file_exists($template_path)) {
             ob_start();
             include($template_path);
@@ -92,35 +119,5 @@ class Renderer extends ObjectPool
             }
         }
         return $content;
-    }
-
-    /**
-     * Widget for view template
-     *
-     * @param string $controller_name
-     * @param string $action
-     * @param array $data
-     *
-     * @throws \Exception If obtained controller is not subclass of base controller.
-     */
-    private function _widget($controller_name, $action, $data = array())
-    {
-        $controllerReflection = new \ReflectionClass($controller_name);
-        if (!$controllerReflection->isSubclassOf('Framework\Controller\Controller')) {
-            throw new \Exception("Unknown controller " . $controllerReflection->name);
-        }
-        $action .= 'Action';
-        if ($controllerReflection->hasMethod($action)) {
-            // ReflectionMethod::invokeArgs() has overloaded in class ReflectionMethodNamedArgs
-            // Now it provides invoking with named arguments
-            $actionReflection = new ReflectionMethodNamedArgs($controller_name, $action);
-            $controller = $controllerReflection->newInstance();
-            $response = $actionReflection->invokeArgs($controller, $data);
-            if ($response instanceof Response) {
-                echo htmlspecialchars_decode($response['content']);
-            } else {
-                throw new BadResponseTypeException('Response type not known');
-            }
-        }
     }
 }

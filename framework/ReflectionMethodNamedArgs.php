@@ -16,7 +16,7 @@ namespace Framework;
  */
 class ReflectionMethodNamedArgs extends \ReflectionMethod
 {
-    public function invokeArgs($object, Array $args = array())
+    function invokeArgs($object, Array $args = array())
     {
         $parameters = $this->getParameters();
         foreach ($parameters as &$param) {

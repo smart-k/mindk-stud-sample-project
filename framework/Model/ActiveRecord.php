@@ -8,26 +8,25 @@
 
 namespace Framework\Model;
 
+use Framework\DI\Service;
+
 
 abstract class ActiveRecord
 {
-    protected static $db = null;
+    /**
+     * Default primary key in database tables
+     *
+     * @var int
+     */
+    public $id;
 
-    public static function getDBCon()
+    /**
+     * Find records in database tables
+     * @param string $mode
+     * @return mixed $output
+     */
+    static function find($mode = 'all')
     {
-
-        if (empty(self::$db)) {
-            self::$db = Service::get('db');
-        }
-
-        return self::$db;
-    }
-
-    public abstract function getTable();
-
-    public static function find($mode = 'all')
-    {
-
         $table = static::getTable();
 
         $sql = "SELECT * FROM " . $table;
@@ -35,10 +34,10 @@ abstract class ActiveRecord
         if (is_numeric($mode)) {
             $sql .= " WHERE id=" . (int)$mode;
         }
-
         // PDO request...
-
-        return $result;
+        $result = Service::get('db')->query($sql)->fetchAll(\PDO::FETCH_CLASS, get_called_class());
+        $output = (is_numeric($mode)) ? $result[0] : $result;
+        return $output;
     }
 
     protected function getFields()
@@ -47,7 +46,7 @@ abstract class ActiveRecord
         return get_object_vars($this);
     }
 
-    public function save()
+    function save()
     {
         $fields = $this->getFields();
 
