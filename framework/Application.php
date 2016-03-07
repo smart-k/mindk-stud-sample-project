@@ -17,7 +17,6 @@ use Framework\Exception\AuthRequredException;
 use Framework\DI\Service;
 
 
-
 /**
  * Class Application
  * Front Controller pattern implemented.
@@ -25,10 +24,22 @@ use Framework\DI\Service;
  */
 class Application extends Controller
 {
+   /**
+     * Application constructor.
+     * Set required services.
+     *
+     * @param string $config_path
+     */
+    public function __construct($config_path)
+    {
+        Service::set('config', include($config_path));
+        Service::set('router', ObjectPool::get('Framework\Router\Router', Service::get('config')['routes']));
+        Service::set('loader', ObjectPool::get('Loader'));
+        Service::set('renderer', ObjectPool::get('Framework\Renderer\Renderer', Service::get('config')));
+    }
+
     function run()
     {
-        $this->_setServices();
-
         $route = Service::get('router')->parseRoute();
         try {
             if (!empty($route)) {
@@ -65,16 +76,6 @@ class Application extends Controller
             $response = $this->render($code . '.html', array('code' => (string)$e->getCode(), 'message' => $e->getMessage())); // Do 500 layout...
         }
         $response->send();
-    }
-
-    /**
-     * Set required services
-     */
-    private function _setServices()
-    {
-        Service::set('router', ObjectPool::get('Framework\Router\Router', include(__DIR__ .'/../app/config/routes.php')));
-        Service::set('loader', ObjectPool::get('Loader'));
-        Service::set('renderer', ObjectPool::get('Framework\Renderer\Renderer', include(__DIR__ . '/../app/config/config.php')));
     }
 
 }

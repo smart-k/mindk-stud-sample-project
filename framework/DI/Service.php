@@ -25,7 +25,7 @@ class Service
      * Setting the service
      *
      * @param $name
-     * @param $object
+     * @param mixed $object
      */
     public static function set($name, $object){
 
