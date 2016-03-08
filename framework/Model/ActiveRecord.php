@@ -34,22 +34,40 @@ abstract class ActiveRecord
         if (is_numeric($mode)) {
             $sql .= " WHERE id=" . (int)$mode;
         }
-        // PDO request...
         $result = Service::get('db')->query($sql)->fetchAll(\PDO::FETCH_CLASS, get_called_class());
         $output = (is_numeric($mode)) ? $result[0] : $result;
         return $output;
     }
 
-    protected function getFields()
+    /**
+     * Get names of database table fields
+     * @return assoc array
+     */
+    protected function _getFields()
     {
 
         return get_object_vars($this);
     }
 
+    /**
+     * Insert data into database table
+     */
     function save()
     {
-        $fields = $this->getFields();
+        $set = '';
+        $values = array(); // Assoc array for PDO::prepare()
 
-        // @TODO: build SQL expression, execute
+        $table = static::getTable();
+        $fields = $this->_getFields();
+
+        foreach ($fields as $key => $value) {
+            if (isset($key)) {
+                $set .= "`" . str_replace("`", "``", $key) . "`" . "=:$key, ";
+                $values[":$key"] = $value;
+            }
+        }
+        $set = substr($set, 0, -2);
+        $sql = "INSERT INTO " . $table . "SET " . $set;
+        return Service::get('db')->prepare($sql)->execute($values);
     }
 }
