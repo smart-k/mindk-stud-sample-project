@@ -27,14 +27,18 @@ abstract class ActiveRecord
      */
     static function find($mode = 'all')
     {
+        $db = Service::get('db');
         $table = static::getTable();
-
         $sql = "SELECT * FROM " . $table;
 
         if (is_numeric($mode)) {
-            $sql .= " WHERE id=" . (int)$mode;
+            $sql .= " WHERE id = ?";
+            $stmt = $db->prepare($sql);
+            $stmt->execute(array((int)$mode));
+        } else {
+            $stmt = $db->query($sql);
         }
-        $result = Service::get('db')->query($sql)->fetchAll(\PDO::FETCH_CLASS, get_called_class());
+        $result = $stmt->fetchAll(\PDO::FETCH_CLASS, get_called_class());
         $output = (is_numeric($mode)) ? $result[0] : $result;
         return $output;
     }
@@ -56,7 +60,7 @@ abstract class ActiveRecord
     {
         $set = '';
         $values = array(); // Assoc array for PDO::prepare()
-
+        $db = Service::get('db');
         $table = static::getTable();
         $fields = $this->_getFields();
 
@@ -67,7 +71,10 @@ abstract class ActiveRecord
             }
         }
         $set = substr($set, 0, -2);
+
         $sql = "INSERT INTO " . $table . "SET " . $set;
-        return Service::get('db')->prepare($sql)->execute($values);
+        $stmt = $db->prepare($sql);
+
+        return $stmt->execute($values);
     }
 }
