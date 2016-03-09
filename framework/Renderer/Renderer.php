@@ -13,6 +13,7 @@ use Framework\ObjectPool;
 use Framework\ReflectionMethodNamedArgs;
 use Framework\Response\Response;
 use Framework\Exception\BadResponseTypeException;
+use Framework\DI\Service;
 
 /**
  * Class Renderer
@@ -56,9 +57,21 @@ class Renderer extends ObjectPool
     function renderMain($content)
     {
 
-        //@TODO: set all required vars and closures..
+        $user = null; // @TODO
+        $flush = array();// @TODO
 
-        return $this->render($this->_main_template, compact('content'), false);
+        /**
+         * Closure for ../src/views/layout.html.php template
+         *
+         * @param string $route_name
+         * @param array $params
+         * @return string|null
+         */
+        $getRoute = function ($route_name, $params = null) {
+            return Service::get('router')->buildRoute($route_name, $params);
+        };
+
+        return $this->render($this->_main_template, compact('getRoute', 'user', 'flush', 'content'), false);
     }
 
     /**
@@ -74,14 +87,14 @@ class Renderer extends ObjectPool
     function render($template_path, $data = array(), $wrap = true)
     {
         /**
-         * Widget for view template (lambda-function)
+         * Closure for ../src/views/Post/index.html.php template
          *
          * @param string $controller_name
          * @param string $action
          * @param array $data
          * @throws \Exception If obtained controller is not subclass of base controller.
          */
-        $data['include'] = function ($controller_name, $action, $data = array()) {
+        $include = function ($controller_name, $action, $data = array()) {
             $controllerReflection = new \ReflectionClass($controller_name);
             if (!$controllerReflection->isSubclassOf('Framework\Controller\Controller')) {
                 throw new \Exception("Unknown controller " . $controllerReflection->name);
