@@ -33,7 +33,7 @@ class Loader
     /**
      * @return Loader|object
      */
-    static function getInstance()
+public static function getInstance()
     {
         if (empty(self::$_instance)) {
             self::$_instance = new self();
@@ -62,7 +62,7 @@ class Loader
      * @param bool $first If true, add the base directory to the begin of the array. In this case, it will be checked first.
      * @return void
      */
-    static function addNamespacePath($namespace, $base_dir, $first = false)
+public static function addNamespacePath($namespace, $base_dir, $first = false)
     {
         /**
          * Namespace normalization.
@@ -94,7 +94,7 @@ class Loader
      * @param string $class Full class name.
      * @return mixed If success returns directory path, otherwise returns false.
      */
-    function getPath($class)
+public function getPath($class)
     {
         return rtrim($this->_load($class, true), '/');
     }

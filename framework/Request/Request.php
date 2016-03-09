@@ -8,54 +8,47 @@
 
 namespace Framework\Request;
 
+use Framework\ObjectPool;
 
-class Request {
-    /**
-     * Получить путь запроса без строки запроса и имени выполняемого
-     * скрипта
-     *
-     * @return string
-     */
-    public function getPathInfo() {
-        // получаем значения:
-        //
-        // - URI без имени хоста
-        // - строки запроса после ?
-        // - имя выполняемого скрипта
-        $request_uri = $_SERVER['REQUEST_URI'];
-        $query_string = $_SERVER['QUERY_STRING'];
-        $script_name = $_SERVER['SCRIPT_NAME'];
+class Request extends ObjectPool
+{
 
-        // извлекаем из URI путь запроса,
-        $path_info = parse_url($_SERVER['REQUEST_URI'])['path'];
-        // возвращаем результат
-        return empty($path_info) ? '/' : $path_info;
-    }
+    protected $request_method;
 
     /**
-     * Поиск и получение значения параметра зпроса
-     * по ключу
-     *
-     * @param string $key               искомый ключ параметра запроса
-     * @return mixed                    значение параметра
-     *                                  или null если параметр не существует
+     * Request constructor.
      */
-    public function find($key) {
-        if ( key_exists($key, $_REQUEST) )
-            return $_REQUEST[$key];
-        else
-            return null;
-    }
-
-    /**
-     * Проверяет существование параметра в запросе
-     * по его ключу
-     *
-     * @param string $key               проверяемый ключ
-     * @return boolean
-     */
-    public function has($key)
+    public function __construct()
     {
-        return key_exists($key, $_REQUEST);
+        $this->request_method = $_SERVER['REQUEST_METHOD'];
+    }
+
+    /**
+     * Check if $_SERVER['REQUEST_METHOD'] is POST
+     *
+     * @return bool
+     */
+    public function isPost()
+    {
+        if ($this->request_method === 'POST') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Find and receive the request parameter by a key
+     *
+     * @param string $key
+     * @return mixed
+     */
+    public function post($key)
+    {
+        if (array_key_exists($key, $_REQUEST)) {
+
+            return $_REQUEST[$key];
+        }
+        return null;
     }
 }

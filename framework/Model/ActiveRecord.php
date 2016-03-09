@@ -25,7 +25,7 @@ abstract class ActiveRecord
      * @param string $mode
      * @return mixed $output
      */
-    static function find($mode = 'all')
+    public static function find($mode = 'all')
     {
         $db = Service::get('db');
         $table = static::getTable();
@@ -56,7 +56,7 @@ abstract class ActiveRecord
     /**
      * Insert data into database table
      */
-    function save()
+    public function save()
     {
         $set = '';
         $values = array(); // Assoc array for PDO::prepare()

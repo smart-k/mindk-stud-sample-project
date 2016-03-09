@@ -15,7 +15,7 @@ use Framework\DI\Service;
 
 abstract class Controller
 {
-    function __call($methodName, $args = array())
+    public function __call($methodName, $args = array())
     {
         if (method_exists($this, $methodName))
             return call_user_func_array(array($this, $methodName), $args);
@@ -32,7 +32,7 @@ abstract class Controller
      * @param   int $code The redirect status code
      * @return  ResponseRedirect
      */
-    static function redirect($url, $content = '', $code = 302)
+    public static function redirect($url, $content = '', $code = 302)
     {
         if (empty($url)) {
             throw new \InvalidArgumentException('Cannot redirect to an empty URL.');
@@ -47,7 +47,7 @@ abstract class Controller
      * @param array $params
      * @return string|null
      */
-    function generateRoute($route_name, $params = null)
+    public function generateRoute($route_name, $params = null)
     {
         return Service::get('router')->buildRoute($route_name, $params);
     }
@@ -60,7 +60,7 @@ abstract class Controller
      *
      * @return  Response
      */
-    function render($layout, $data = array())
+    public function render($layout, $data = array())
     {
         $class = get_called_class();
         if ($class === 'Framework\Application') {
@@ -72,5 +72,15 @@ abstract class Controller
         $full_path = realpath($tplPath . $layout . '.php');
         $content = Service::get('renderer')->render($full_path, $data);
         return new Response($content);
+    }
+
+    /**
+     * Get Request instance
+     *
+     * @return null|Request
+     */
+    public function getRequest()
+    {
+        return Service::get('request');
     }
 }

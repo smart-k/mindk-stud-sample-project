@@ -27,7 +27,7 @@ class Service
      * @param $name
      * @param mixed $object
      */
-    static function set($name, $object)
+    public static function set($name, $object)
     {
 
         self::$_services[$name] = $object;
@@ -39,7 +39,7 @@ class Service
      * @param $name
      * @return object|null
      */
-    static function get($name)
+    public static function get($name)
     {
 
         return array_key_exists($name, self::$_services) ? self::$_services[$name] : null;

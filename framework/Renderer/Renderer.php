@@ -30,7 +30,7 @@ class Renderer extends ObjectPool
     /**
      * @return string Path to error template directory
      */
-    function getErrorTemplatePath()
+    public function getErrorTemplatePath()
     {
         $pos = strrpos($this->_error_template, '/');
         $template_path = substr($this->_error_template, 0, $pos + 1);
@@ -41,7 +41,7 @@ class Renderer extends ObjectPool
      * Renderer constructor.
      * @param array $config
      */
-    function __construct($config = array())
+    public function __construct($config = array())
     {
         $this->_main_template = $config['main_layout'];
         $this->_error_template = $config['error_500'];
@@ -54,22 +54,10 @@ class Renderer extends ObjectPool
      *
      * @return html/text
      */
-    function renderMain($content)
+    public function renderMain($content)
     {
-
         $user = null; // @TODO
         $flush = array();// @TODO
-
-        /**
-         * Closure for ../src/views/layout.html.php template
-         *
-         * @param string $route_name
-         * @param array $params
-         * @return string|null
-         */
-        $getRoute = function ($route_name, $params = null) {
-            return Service::get('router')->buildRoute($route_name, $params);
-        };
 
         return $this->render($this->_main_template, compact('getRoute', 'user', 'flush', 'content'), false);
     }
@@ -84,7 +72,7 @@ class Renderer extends ObjectPool
      * @return  text/html $content
      * @throws \Exception If template file not found
      */
-    function render($template_path, $data = array(), $wrap = true)
+    public function render($template_path, $data = array(), $wrap = true)
     {
         /**
          * Closure for ../src/views/Post/index.html.php template
@@ -112,6 +100,17 @@ class Renderer extends ObjectPool
                     throw new BadResponseTypeException('Response type not known');
                 }
             }
+        };
+
+        /**
+         * Closure for login.html.php, signin.html.php and layout.html.php templates
+         *
+         * @param string $route_name
+         * @param array $params
+         * @return string|null
+         */
+        $getRoute = function ($route_name, $params = null) {
+            return Service::get('router')->buildRoute($route_name, $params);
         };
 
         extract($data);

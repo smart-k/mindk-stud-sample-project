@@ -32,7 +32,7 @@ abstract class ObjectPool
      * @return object Return class instance
      * @throws \Exception If class does not exist
      */
-    static function get($class_name = false, $args = array())
+    public static function get($class_name = false, $args = array())
     {
         $name = ($class_name === false) ? get_called_class() : $class_name;
 
@@ -51,7 +51,7 @@ abstract class ObjectPool
      * @param object $instance Singleton instance
      * @return object
      */
-    static function add($instance)
+    public static function add($instance)
     {
         $instanceReflection = new \ReflectionClass($instance);
         if (empty(self::$_loaded_instances[$instanceReflection->name])) {
