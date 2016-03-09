@@ -39,8 +39,25 @@ abstract class ActiveRecord
             $stmt = $db->query($sql);
         }
         $result = $stmt->fetchAll(\PDO::FETCH_CLASS, get_called_class());
-        $output = (is_numeric($mode)) ? $result[0] : $result;
+        $output = is_numeric($mode) ? $result[0] : $result;
         return $output;
+    }
+
+    /**
+     * Find records in database table by email attribute
+     *
+     * @param $email
+     * @return mixed
+     */
+    public static function findByEmail($email)
+    {
+        $db = Service::get('db');
+        $table = static::getTable();
+        $sql = "SELECT * FROM " . $table . " WHERE email = ?";
+        $stmt = $db->prepare($sql);
+        $stmt->execute(array((string)$email));
+        $result = $stmt->fetchAll(\PDO::FETCH_CLASS, get_called_class());
+        return $result[0];
     }
 
     /**
@@ -72,7 +89,7 @@ abstract class ActiveRecord
         }
         $set = substr($set, 0, -2);
 
-        $sql = "INSERT INTO " . $table . "SET " . $set;
+        $sql = "INSERT INTO " . $table . " SET " . $set;
         $stmt = $db->prepare($sql);
 
         return $stmt->execute($values);

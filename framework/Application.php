@@ -82,6 +82,5 @@ class Application extends Controller
         }
         $response->send();
     }
-
 }
 

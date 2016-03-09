@@ -13,28 +13,22 @@ use Framework\ObjectPool;
 class Request extends ObjectPool
 {
 
-    protected $request_method;
+    protected $_request_method;
 
     /**
      * Request constructor.
      */
     public function __construct()
     {
-        $this->request_method = $_SERVER['REQUEST_METHOD'];
+        $this->_request_method = $_SERVER['REQUEST_METHOD'];
     }
 
     /**
-     * Check if $_SERVER['REQUEST_METHOD'] is POST
-     *
-     * @return bool
+     * @return true if $_SERVER['REQUEST_METHOD'] is POST
      */
     public function isPost()
     {
-        if ($this->request_method === 'POST') {
-            return true;
-        } else {
-            return false;
-        }
+        return $this->_request_method === 'POST';
     }
 
     /**
@@ -45,10 +39,6 @@ class Request extends ObjectPool
      */
     public function post($key)
     {
-        if (array_key_exists($key, $_REQUEST)) {
-
-            return $_REQUEST[$key];
-        }
-        return null;
+        return array_key_exists($key, $_REQUEST) ? $_REQUEST[$key] : null;
     }
 }

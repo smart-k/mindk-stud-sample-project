@@ -52,21 +52,22 @@ class SecurityController extends Controller
         if (Service::get('security')->isAuthenticated()) {
             return new ResponseRedirect($this->generateRoute('home'));
         }
-        $errors = array();
+       $errors = array();
 
         if ($this->getRequest()->isPost()) {
-            try{
-                $user           = new User();
-                $user->email    = $this->getRequest()->post('email');
+            try {
+                $user = new User();
+                $user->email = $this->getRequest()->post('email');
                 $user->password = $this->getRequest()->post('password');
-                $user->role     = 'ROLE_USER';
+                $user->role = 'ROLE_USER';
                 $user->save();
                 return $this->redirect($this->generateRoute('home'));
-            } catch(DatabaseException $e){
+            } catch (DatabaseException $e) {
                 $errors = array($e->getMessage());
             }
         }
 
         return $this->render('signin.html', array('errors' => $errors));
+
     }
 }
