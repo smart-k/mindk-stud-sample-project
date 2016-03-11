@@ -80,25 +80,16 @@ class Renderer extends ObjectPool
          * @param string $controller_name
          * @param string $action
          * @param array $data
-         * @throws \Exception If obtained controller is not subclass of base controller.
+         * @throws \Exception If obtained response is not instance of Response.
          */
         $include = function ($controller_name, $action, $data = array()) {
-            $controllerReflection = new \ReflectionClass($controller_name);
-            if (!$controllerReflection->isSubclassOf('Framework\Controller\Controller')) {
-                throw new \Exception("Unknown controller " . $controllerReflection->name);
-            }
-            $action .= 'Action';
-            if ($controllerReflection->hasMethod($action)) {
-                // ReflectionMethod::invokeArgs() has overloaded in class ReflectionMethodNamedArgs
-                // Now it provides invoking with named arguments
-                $actionReflection = new ReflectionMethodNamedArgs($controller_name, $action);
-                $controller = $controllerReflection->newInstance();
-                $response = $actionReflection->invokeArgs($controller, $data);
-                if ($response instanceof Response) {
-                    echo htmlspecialchars_decode($response->content);
-                } else {
-                    throw new BadResponseTypeException('Response type not known');
-                }
+
+            $response = Service::get('application')->getActionResponse($controller_name, $action, $data);
+
+            if ($response instanceof Response) {
+                echo htmlspecialchars_decode($response->content);
+            } else {
+                throw new BadResponseTypeException('Response type not known');
             }
         };
 

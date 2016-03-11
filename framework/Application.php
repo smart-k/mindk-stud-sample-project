@@ -37,10 +37,12 @@ class Application extends Controller
         Service::set('loader', ObjectPool::get('Loader'));
         Service::set('renderer', ObjectPool::get('Framework\Renderer\Renderer', Service::get('config')));
         Service::set('request', ObjectPool::get('Framework\Request\Request'));
+
         extract(Service::get('config')['pdo']);
         $dns .= ';charset=latin1';
         $db = new \PDO($dns, $user, $password);
         Service::set('db', $db);
+        Service::set('application', $this);
     }
 
     public function run()
@@ -48,25 +50,13 @@ class Application extends Controller
         $route = Service::get('router')->parseRoute();
         try {
             if (!empty($route)) {
-                $controllerReflection = new \ReflectionClass($route['controller']);
 
-                if (!$controllerReflection->isSubclassOf('Framework\Controller\Controller')) {
-                    throw new \Exception("Unknown controller " . $controllerReflection->name);
-                }
+                $response = $this->getActionResponse($route['controller'], $route['action'], $route['parameters']);
 
-                $action = $route['action'] . 'Action';
-
-                if ($controllerReflection->hasMethod($action)) {
-                    // ReflectionMethod::invokeArgs() has overloaded in class ReflectionMethodNamedArgs
-                    // Now it provides invoking with named arguments
-                    $actionReflection = new ReflectionMethodNamedArgs($route['controller'], $action);
-                    $controller = $controllerReflection->newInstance();
-                    $response = $actionReflection->invokeArgs($controller, $route['parameters']);
-                    if ($response instanceof Response) {
-                        // ...
-                    } else {
-                        throw new BadResponseTypeException('Response type not known');
-                    }
+                if ($response instanceof Response) {
+                    // ...
+                } else {
+                    throw new BadResponseTypeException('Response type not known');
                 }
             } else {
                 throw new HttpNotFoundException('Route not found');
@@ -81,6 +71,36 @@ class Application extends Controller
             $response = $this->render($code . '.html', array('code' => (string)$e->getCode(), 'message' => $e->getMessage())); // Do 500 layout...
         }
         $response->send();
+    }
+
+    /**
+     * Invoke obtained controller action with parameters through Reflection and return controller response.
+     *
+     * @param string $controller_name
+     * @param string $action
+     * @param array $data
+     * @return Response|null
+     * @throws \Exception If obtained controller is not subclass of Controller class
+     */
+    public function getActionResponse($controller_name, $action, $data = array())
+    {
+        $action .= 'Action';
+
+        $controllerReflection = new \ReflectionClass($controller_name);
+
+        if (!$controllerReflection->isSubclassOf('Framework\Controller\Controller')) {
+            throw new \Exception("Unknown controller " . $controllerReflection->name);
+        }
+
+        if ($controllerReflection->hasMethod($action)) {
+            // ReflectionMethod::invokeArgs() has overloaded in class ReflectionMethodNamedArgs
+            // Now it provides invoking with named arguments
+            $actionReflection = new ReflectionMethodNamedArgs($controller_name, $action);
+            $controller = $controllerReflection->newInstance();
+            $response = $actionReflection->invokeArgs($controller, $data);
+            return $response;
+        }
+        return null;
     }
 }
 

@@ -90,6 +90,7 @@ abstract class ActiveRecord
         $set = substr($set, 0, -2);
 
         $sql = "INSERT INTO " . $table . " SET " . $set;
+
         $stmt = $db->prepare($sql);
 
         return $stmt->execute($values);
