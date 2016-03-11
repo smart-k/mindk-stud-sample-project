@@ -43,22 +43,7 @@ abstract class ActiveRecord
         return $output;
     }
 
-    /**
-     * Find records in database table by email attribute
-     *
-     * @param $email
-     * @return mixed
-     */
-    public static function findByEmail($email)
-    {
-        $db = Service::get('db');
-        $table = static::getTable();
-        $sql = "SELECT * FROM " . $table . " WHERE email = ?";
-        $stmt = $db->prepare($sql);
-        $stmt->execute(array((string)$email));
-        $result = $stmt->fetchAll(\PDO::FETCH_CLASS, get_called_class());
-        return $result[0];
-    }
+
 
     /**
      * Get names of database table fields
