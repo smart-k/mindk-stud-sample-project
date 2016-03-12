@@ -12,33 +12,57 @@ use Framework\ObjectPool;
 
 class Request extends ObjectPool
 {
-
-    protected $_request_method;
-
-    /**
-     * Request constructor.
-     */
-    public function __construct()
+    public function getMethod()
     {
-        $this->_request_method = $_SERVER['REQUEST_METHOD'];
+        return $_SERVER['REQUEST_METHOD'];
     }
 
-    /**
-     * @return true if $_SERVER['REQUEST_METHOD'] is POST
-     */
     public function isPost()
     {
-        return $this->_request_method === 'POST';
+        return ($this->getMethod() == 'POST');
     }
 
-    /**
-     * Find and receive the request parameter by a key
-     *
-     * @param string $key
-     * @return mixed
-     */
-    public function post($key)
+    public function isGet()
     {
-        return array_key_exists($key, $_REQUEST) ? $_REQUEST[$key] : null;
+        return ($this->getMethod() == 'GET');
     }
+
+    public function getHeaders($header = null)
+    {
+
+        $data = apache_request_headers();
+
+        if (!empty($header)) {
+            $data = array_key_exists($header, $data) ? $data[$header] : null;
+        }
+
+        return $data;
+    }
+
+    public function post($varname = '', $filter = 'STRING')
+    {
+        return array_key_exists($varname, $_POST) ? $this->filter($_POST[$varname], $filter) : null;
+    }
+
+    protected function filter($source, $filter = 'STRING')
+    {
+        $result = null;
+
+        switch ($filter) {
+            case 'STRING':
+                $result = filter_var((string)$source, FILTER_SANITIZE_STRING);
+                break;
+            case 'EMAIL':
+                $result = filter_var((string)$source, FILTER_SANITIZE_EMAIL);
+                break;
+            case 'INT': // Only use the first integer value
+                preg_match('~^\d+~', (string)$source, $matches);
+                $result = (int)$matches[0];
+                break;
+        }
+
+        return $result;
+
+    }
+
 }

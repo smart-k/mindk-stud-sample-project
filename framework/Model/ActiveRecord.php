@@ -76,18 +76,6 @@ abstract class ActiveRecord
         $table = static::getTable();
         $fields = $this->_getFields();
 
-        $all_rules = $this->getRules();
-
-        foreach ($all_rules as $name => $rules) {
-            if (array_key_exists($name, $rules)) {
-                foreach ($rules as $rule) {
-                    $valid = $rule->isValid($fields[$name]);
-                    if ($valid == false) {
-                        throw new DatabaseException($fields[$name] . 'validation error');
-                    }
-                }
-            }
-        }
         foreach ($fields as $key => $value) {
             if (isset($key)) {
                 $set .= "`" . str_replace("`", "``", $key) . "`" . "=:$key, ";
@@ -101,6 +89,5 @@ abstract class ActiveRecord
         $stmt = $db->prepare($sql);
 
         return $stmt->execute($values);
-
     }
 }
