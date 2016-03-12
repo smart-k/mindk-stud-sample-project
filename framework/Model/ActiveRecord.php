@@ -9,6 +9,7 @@
 namespace Framework\Model;
 
 use Framework\DI\Service;
+use Framework\Exception\DatabaseException;
 
 
 abstract class ActiveRecord
@@ -19,6 +20,14 @@ abstract class ActiveRecord
      * @var int
      */
     public $id;
+
+    /**
+     * @return array
+     */
+    public function getRules()
+    {
+        return [];
+    }
 
     /**
      * Find records in database tables
@@ -32,17 +41,17 @@ abstract class ActiveRecord
         $sql = "SELECT * FROM " . $table;
 
         if (is_numeric($mode)) {
-            $sql .= " WHERE id = ?";
-            $stmt = $db->prepare($sql);
-            $stmt->execute(array((int)$mode));
+            $sql .= " WHERE id = :id";
+            $query = $db->prepare($sql);
+            $query->bindParam(":id", $mode, \PDO::PARAM_INT, 11);
+            $query->execute();
         } else {
-            $stmt = $db->query($sql);
+            $query = $db->query($sql);
         }
-        $result = $stmt->fetchAll(\PDO::FETCH_CLASS, get_called_class());
+        $result = $query->fetchAll(\PDO::FETCH_CLASS, get_called_class());
         $output = is_numeric($mode) ? $result[0] : $result;
         return $output;
     }
-
 
 
     /**
@@ -56,16 +65,29 @@ abstract class ActiveRecord
     }
 
     /**
-     * Insert data into database table
+     * Validate and insert data into database table
      */
     public function save()
     {
         $set = '';
         $values = array(); // Assoc array for PDO::prepare()
+
         $db = Service::get('db');
         $table = static::getTable();
         $fields = $this->_getFields();
 
+        $all_rules = $this->getRules();
+
+        foreach ($all_rules as $name => $rules) {
+            if (array_key_exists($name, $rules)) {
+                foreach ($rules as $rule) {
+                    $valid = $rule->isValid($fields[$name]);
+                    if ($valid == false) {
+                        throw new DatabaseException($fields[$name] . 'validation error');
+                    }
+                }
+            }
+        }
         foreach ($fields as $key => $value) {
             if (isset($key)) {
                 $set .= "`" . str_replace("`", "``", $key) . "`" . "=:$key, ";
@@ -79,5 +101,6 @@ abstract class ActiveRecord
         $stmt = $db->prepare($sql);
 
         return $stmt->execute($values);
+
     }
 }

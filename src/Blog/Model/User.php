@@ -39,10 +39,11 @@ class User extends ActiveRecord implements UserInterface
     {
         $db = Service::get('db');
         $table = static::getTable();
-        $sql = "SELECT * FROM " . $table . " WHERE email = ?";
-        $stmt = $db->prepare($sql);
-        $stmt->execute(array((string)$email));
-        $result = $stmt->fetchAll(\PDO::FETCH_CLASS, get_called_class());
+        $sql = "SELECT * FROM " . $table . " WHERE email = :email";
+        $query = $db->prepare($sql);
+        $query->bindParam(":email", $email, \PDO::PARAM_STR, 100);
+        $query->execute();
+        $result = $query->fetchAll(\PDO::FETCH_CLASS, get_called_class());
         return $result[0];
     }
 
