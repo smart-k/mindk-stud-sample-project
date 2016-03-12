@@ -58,6 +58,7 @@ class Renderer extends ObjectPool
     {
         $user = null; // @TODO
         $flush = array();// @TODO
+        $route['_name'] = trim($_SERVER['REQUEST_URI'], '/');
 
         return $this->render($this->_main_template, compact('getRoute', 'user', 'flush', 'content'), false);
     }
