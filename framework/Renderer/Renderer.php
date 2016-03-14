@@ -54,12 +54,9 @@ class Renderer extends ObjectPool
      */
     public function renderMain($content)
     {
-
        // $flush = $_SESSION['messages'];
         $flush = array();
-        $route['_name'] = trim($_SERVER['REQUEST_URI'], '/');
-
-        return $this->render($this->_main_template, compact('flush', 'content', 'route'), false);
+        return $this->render($this->_main_template, compact('flush', 'content'), false);
     }
 
     /**

@@ -52,14 +52,18 @@ class Application extends Controller
         try {
             if (!empty($route)) {
 
-                Service::get('session')->returnUrl = $route['pattern'];
+                if (empty($route['security']) || !empty($route['security']) && $_SESSION['user']->role === 'ROLE_USER') {
 
-                $response = $this->getActionResponse($route['controller'], $route['action'], $route['parameters']);
+                    $response = $this->getActionResponse($route['controller'], $route['action'], $route['parameters']);
 
-                if ($response instanceof Response) {
-                    // ...
+                    if ($response instanceof Response) {
+                        // ...
+                    } else {
+                        throw new BadResponseTypeException('Response type not known');
+                    }
                 } else {
-                    throw new BadResponseTypeException('Response type not known');
+                    Service::get('session')->returnUrl = $route['pattern'];
+                    throw new AuthRequredException();
                 }
             } else {
                 throw new HttpNotFoundException('Route not found');
