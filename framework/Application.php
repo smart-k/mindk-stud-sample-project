@@ -39,8 +39,6 @@ class Application extends Controller
         Service::set('request', ObjectPool::get('Framework\Request\Request'));
         Service::set('session', ObjectPool::get('Framework\Session\Session'));
         Service::set('security', ObjectPool::get('Framework\Security\Security'));
-
-
         extract(Service::get('config')['pdo']);
         $dns .= ';charset=latin1';
         $db = new \PDO($dns, $user, $password);

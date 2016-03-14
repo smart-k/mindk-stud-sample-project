@@ -17,7 +17,7 @@ use Framework\ObjectPool;
  */
 class Security extends ObjectPool
 {
-    protected $_user;
+    protected $_user = null;
 
     /**
      * Check if the user is authenticated
@@ -39,6 +39,14 @@ class Security extends ObjectPool
     {
         $this->_user = $user;
         $_SESSION["is_authenticated"] = true;
+    }
+
+    /**
+     * Get authenticated user.
+     */
+    public function getUser()
+    {
+        return $this->_user;
     }
 
     /**

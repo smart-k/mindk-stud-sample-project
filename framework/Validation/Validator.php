@@ -28,6 +28,8 @@ class Validator
      */
     public function isValid()
     {
+        $isValid = true;
+
         $fields = $this->_model->_getFields();
         $all_rules = $this->_model->getRules();
         foreach ($all_rules as $name => $rules) {
@@ -36,9 +38,15 @@ class Validator
                     $valid = $rule->isValid($fields[$name]);
                     if ($valid == false) {
                         $this->_errors[$name] = ucfirst($fields[$name]) . 'validation error';
+                        $isValid = false;
                     }
                 }
             }
         }
+        return $isValid;
+    }
+
+    public function getErrors(){
+        return $this->_errors;
     }
 }

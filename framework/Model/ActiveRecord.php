@@ -58,7 +58,7 @@ abstract class ActiveRecord
      * Get names of database table fields
      * @return assoc array
      */
-    protected function _getFields()
+    public function _getFields()
     {
 
         return get_object_vars($this);

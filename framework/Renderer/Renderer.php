@@ -56,11 +56,11 @@ class Renderer extends ObjectPool
      */
     public function renderMain($content)
     {
-        $user = null; // @TODO
+        $user =Service::get('security')->getUser();
         $flush = array();// @TODO
         $route['_name'] = trim($_SERVER['REQUEST_URI'], '/');
 
-        return $this->render($this->_main_template, compact('getRoute', 'user', 'flush', 'content'), false);
+        return $this->render($this->_main_template, compact('user', 'flush', 'content', 'route'), false);
     }
 
     /**
