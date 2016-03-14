@@ -44,7 +44,7 @@ class User extends ActiveRecord implements UserInterface
         $query->bindParam(":email", $email, \PDO::PARAM_STR, 100);
         $query->execute();
         $result = $query->fetchAll(\PDO::FETCH_CLASS, get_called_class());
-        return $result[0];
+        return empty($result) ? null : $result[0];
     }
 
 }
