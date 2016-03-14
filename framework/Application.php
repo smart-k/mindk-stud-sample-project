@@ -53,6 +53,7 @@ class Application extends Controller
             if (!empty($route)) {
 
                 Service::get('session')->returnUrl = $route['pattern'];
+
                 $response = $this->getActionResponse($route['controller'], $route['action'], $route['parameters']);
 
                 if ($response instanceof Response) {

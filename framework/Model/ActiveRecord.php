@@ -87,7 +87,12 @@ abstract class ActiveRecord
         $sql = "INSERT INTO " . $table . " SET " . $set;
 
         $stmt = $db->prepare($sql);
+        $result = $stmt->execute($values);
 
-        return $stmt->execute($values);
+        $class = get_called_class();
+        if ($class === 'Blog\Model\User' && $result == true) {
+            Service::get('security')->setUser($this); // If route == '/signin'
+        }
+        return $result;
     }
 }

@@ -8,9 +8,7 @@
 
 namespace Framework\Renderer;
 
-
 use Framework\ObjectPool;
-use Framework\ReflectionMethodNamedArgs;
 use Framework\Response\Response;
 use Framework\Exception\BadResponseTypeException;
 use Framework\DI\Service;
@@ -56,11 +54,11 @@ class Renderer extends ObjectPool
      */
     public function renderMain($content)
     {
-        $user =Service::get('security')->getUser();
+
         $flush = array();// @TODO
         $route['_name'] = trim($_SERVER['REQUEST_URI'], '/');
 
-        return $this->render($this->_main_template, compact('user', 'flush', 'content', 'route'), false);
+        return $this->render($this->_main_template, compact('flush', 'content', 'route'), false);
     }
 
     /**
@@ -104,6 +102,8 @@ class Renderer extends ObjectPool
         $getRoute = function ($route_name, $params = null) {
             return Service::get('router')->buildRoute($route_name, $params);
         };
+
+        $user = Service::get('security')->getUser();
 
         extract($data);
 
