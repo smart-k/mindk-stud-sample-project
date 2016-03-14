@@ -25,9 +25,9 @@ class ResponseRedirect extends Response
      * @param int $code The redirect status code
      * @param string $type Content-Type
      */
-    public function __construct($url, $content = '', $code = 302, $type = 'text/html')
+    public function __construct($url, $code = 302)
     {
-        parent::__construct($content, $code, $type);
+        parent::__construct('', $code);
         $this->setHeader('Location', $url);
     }
 }

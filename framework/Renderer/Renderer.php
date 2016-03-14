@@ -54,8 +54,8 @@ class Renderer extends ObjectPool
      */
     public function renderMain($content)
     {
-       // $flush = $_SESSION['messages'];
-        $flush = array();
+        $flush = isset($_SESSION['messages']) ? $_SESSION['messages'] : [];
+        if (isset($flush)) unset($_SESSION['messages']);
         return $this->render($this->_main_template, compact('flush', 'content'), false);
     }
 

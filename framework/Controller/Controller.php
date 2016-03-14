@@ -28,16 +28,17 @@ abstract class Controller
      * Can redirect via a Location header
      *
      * @param   string $url The url
-     * @param   string $content The response content
+     * @param   string $message The response content
      * @param   int $code The redirect status code
      * @return  ResponseRedirect
      */
-    public static function redirect($url, $content = '', $code = 302)
+    public static function redirect($url, $message = null, $code = 302)
     {
         if (empty($url)) {
             throw new \InvalidArgumentException('Cannot redirect to an empty URL.');
         }
-        return new ResponseRedirect($url, $content, $code);
+        if (isset($message)) Service::get('session')->addFlush('info', $message);
+        return new ResponseRedirect($url, $code);
     }
 
     /**
