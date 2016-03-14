@@ -28,17 +28,19 @@ class Validator
      */
     public function isValid()
     {
-        $validation_result = true;
+        $validation_result = false;
 
         $fields = $this->_model->_getFields();
         $all_rules = $this->_model->getRules();
+
         foreach ($all_rules as $name => $rules) {
-            if (array_key_exists($name, $rules)) {
+            if (array_key_exists($name, $fields)) {
                 foreach ($rules as $rule) {
                     $valid = $rule->isValid($fields[$name]);
                     if ($valid == false) {
-                        $this->_errors[$name] = ucfirst($fields[$name]) . 'validation error';
-                        $validation_result = false;
+                        $this->_errors[$name] = ucfirst($name) . ' validation error';
+                    } else {
+                        $validation_result = true;
                     }
                 }
             }
@@ -46,7 +48,8 @@ class Validator
         return $validation_result;
     }
 
-    public function getErrors(){
+    public function getErrors()
+    {
         return $this->_errors;
     }
 }
