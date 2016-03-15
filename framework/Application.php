@@ -15,7 +15,7 @@ use Framework\Response\ResponseRedirect;
 use Framework\Exception\BadResponseTypeException;
 use Framework\Exception\HttpNotFoundException;
 use Framework\Exception\AuthRequiredException;
-
+use Framework\Session\Session;
 
 
 /**
@@ -53,7 +53,7 @@ class Application extends Controller
         try {
             if (!empty($route)) {
 
-                if (empty($route['security']) || !empty($route['security']) && $_SESSION['user']->role === 'ROLE_USER') {
+                if (empty($route['security']) || !empty($route['security']) && $_SESSION['user']->role === $route['security'][0]) {
 
                     $response = $this->getActionResponse($route['controller'], $route['action'], $route['parameters']);
 

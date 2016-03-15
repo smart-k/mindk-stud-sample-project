@@ -45,6 +45,7 @@ abstract class ActiveRecord
             $query->bindParam(":id", $mode, \PDO::PARAM_INT, 11);
             $query->execute();
         } else {
+            $sql .= " ORDER BY date";
             $query = $db->query($sql);
         }
         $result = $query->fetchAll(\PDO::FETCH_CLASS, get_called_class());
