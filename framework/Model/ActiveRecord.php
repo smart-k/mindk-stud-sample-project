@@ -9,7 +9,7 @@
 namespace Framework\Model;
 
 use Framework\DI\Service;
-
+use Framework\Exception\DatabaseException;
 
 abstract class ActiveRecord
 {
@@ -32,6 +32,7 @@ abstract class ActiveRecord
      * Find records in database tables
      * @param string $mode
      * @return mixed $output
+     * @throws DatabaseException If database query returns false
      */
     public static function find($mode = 'all')
     {
@@ -43,14 +44,24 @@ abstract class ActiveRecord
             $sql .= " WHERE id = :id";
             $query = $db->prepare($sql);
             $query->bindParam(":id", $mode, \PDO::PARAM_INT, 11);
-            $query->execute();
+            $check_query_result = $query->execute();
         } else {
             $sql .= " ORDER BY date";
             $query = $db->query($sql);
+            $check_query_result = $query;
         }
+
+        if ($check_query_result === false) {
+            throw new DatabaseException('Database reading error');
+        }
+
         $result = $query->fetchAll(\PDO::FETCH_CLASS, get_called_class());
-        $output = is_numeric($mode) ? $result[0] : $result;
-        return $output;
+
+        if (is_numeric($mode) && isset($result[0])) {
+            return $result[0];
+        }
+
+        return $result;
     }
 
 

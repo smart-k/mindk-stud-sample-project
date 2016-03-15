@@ -10,12 +10,12 @@ namespace Framework;
 
 use Framework\Controller\Controller;
 use Framework\DI\Service;
+use Framework\Exception\DatabaseException;
 use Framework\Response\Response;
 use Framework\Response\ResponseRedirect;
 use Framework\Exception\BadResponseTypeException;
 use Framework\Exception\HttpNotFoundException;
 use Framework\Exception\AuthRequiredException;
-use Framework\Session\Session;
 
 
 /**
@@ -74,6 +74,9 @@ class Application extends Controller
             $response = $this->render($code . '.html', array('code' => $code, 'message' => $e->getMessage())); // Render 404
         } catch (AuthRequiredException $e) {
             $response = new ResponseRedirect($this->generateRoute('login')); // Reroute to login page
+        } catch (DatabaseException $e) {
+            $code = '500';
+            $response = $this->render($code . '.html', array('code' => (string)$e->getCode(), 'message' => $e->getMessage())); // Render 500
         } catch (\Exception $e) {
             $code = '500';
             $response = $this->render($code . '.html', array('code' => (string)$e->getCode(), 'message' => $e->getMessage())); // Render 500
