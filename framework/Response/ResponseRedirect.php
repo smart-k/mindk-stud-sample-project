@@ -21,9 +21,7 @@ class ResponseRedirect extends Response
      * Set the Location header.
      *
      * @param string $url The url
-     * @param string $content The response content
      * @param int $code The redirect status code
-     * @param string $type Content-Type
      */
     public function __construct($url, $code = 302)
     {

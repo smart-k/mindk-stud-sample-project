@@ -9,7 +9,6 @@
 namespace Framework\Model;
 
 use Framework\DI\Service;
-use Framework\Exception\DatabaseException;
 
 
 abstract class ActiveRecord
@@ -91,7 +90,7 @@ abstract class ActiveRecord
 
         $class = get_called_class();
         if ($class === 'Blog\Model\User' && $result == true) {
-            Service::get('security')->setUser($this); // If route == '/signin'
+            Service::get('security')->setUser($this); // If $route['pattern'] == '/signin'
         }
         return $result;
     }

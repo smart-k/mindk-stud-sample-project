@@ -8,7 +8,6 @@
 
 namespace Framework;
 
-
 /**
  * Class ReflectionMethodNamedArgs
  * Providing reflection and invoking with named arguments.

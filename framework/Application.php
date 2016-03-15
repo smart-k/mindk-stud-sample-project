@@ -9,17 +9,18 @@
 namespace Framework;
 
 use Framework\Controller\Controller;
+use Framework\DI\Service;
 use Framework\Response\Response;
 use Framework\Response\ResponseRedirect;
 use Framework\Exception\BadResponseTypeException;
 use Framework\Exception\HttpNotFoundException;
-use Framework\Exception\AuthRequredException;
-use Framework\DI\Service;
+use Framework\Exception\AuthRequiredException;
+
 
 
 /**
  * Class Application
- * Front Controller pattern implemented.
+ * Front Controller pattern has been implemented.
  * @package Framework
  */
 class Application extends Controller
@@ -63,7 +64,7 @@ class Application extends Controller
                     }
                 } else {
                     Service::get('session')->returnUrl = $route['pattern'];
-                    throw new AuthRequredException();
+                    throw new AuthRequiredException();
                 }
             } else {
                 throw new HttpNotFoundException('Route not found');
@@ -71,11 +72,11 @@ class Application extends Controller
         } catch (HttpNotFoundException $e) {
             $code = (string)$e->getCode();
             $response = $this->render($code . '.html', array('code' => $code, 'message' => $e->getMessage())); // Render 404
-        } catch (AuthRequredException $e) {
+        } catch (AuthRequiredException $e) {
             $response = new ResponseRedirect($this->generateRoute('login')); // Reroute to login page
         } catch (\Exception $e) {
             $code = '500';
-            $response = $this->render($code . '.html', array('code' => (string)$e->getCode(), 'message' => $e->getMessage())); // Do 500 layout...
+            $response = $this->render($code . '.html', array('code' => (string)$e->getCode(), 'message' => $e->getMessage())); // Render 500
         }
         $response->send();
     }

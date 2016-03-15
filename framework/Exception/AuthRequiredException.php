@@ -9,7 +9,7 @@
 namespace Framework\Exception;
 
 
-class AuthRequredException extends \Exception
+class AuthRequiredException extends \Exception
 {
 
 }
