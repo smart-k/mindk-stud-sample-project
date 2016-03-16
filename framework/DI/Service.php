@@ -8,7 +8,6 @@
 
 namespace Framework\DI;
 
-
 /**
  * Class Service
  *
@@ -19,7 +18,7 @@ class Service
     /**
      * @var array   Services
      */
-    protected static $_services = array();
+    protected static $_services = [];
 
     /**
      * Setting the service
@@ -29,7 +28,6 @@ class Service
      */
     public static function set($name, $object)
     {
-
         self::$_services[$name] = $object;
     }
 
@@ -41,7 +39,6 @@ class Service
      */
     public static function get($name)
     {
-
         return array_key_exists($name, self::$_services) ? self::$_services[$name] : null;
     }
 }

@@ -15,6 +15,7 @@ use Framework\DI\Service;
 
 /**
  * Class Renderer
+ *
  * @package Framework\Renderer
  */
 class Renderer extends ObjectPool
@@ -23,10 +24,14 @@ class Renderer extends ObjectPool
      * @var string  Main wrapper template file location
      */
     protected $_main_template = '';
+
+    /**
+     * @var string  Error template file location
+     */
     protected $_error_template = '';
 
     /**
-     * @return string Path to error template directory
+     * @return string Error template directory location
      */
     public function getErrorTemplatePath()
     {
@@ -37,9 +42,10 @@ class Renderer extends ObjectPool
 
     /**
      * Renderer constructor.
+     *
      * @param array $config
      */
-    public function __construct($config = array())
+    public function __construct($config = [])
     {
         $this->_main_template = $config['main_layout'];
         $this->_error_template = $config['error_500'];
@@ -55,21 +61,23 @@ class Renderer extends ObjectPool
     public function renderMain($content)
     {
         $flush = isset($_SESSION['messages']) ? $_SESSION['messages'] : [];
-        if (isset($flush)) unset($_SESSION['messages']);
+        if (isset($flush)) {
+            unset($_SESSION['messages']);
+        }
         return $this->render($this->_main_template, compact('flush', 'content'), false);
     }
 
     /**
-     * Render specified template file with data provided
+     * Render specified template with data provided
      *
-     * @param   string $template_path Template file path (full)
-     * @param   array $data Data array
+     * @param   string $template_path Template path (full)
+     * @param   array $data Data
      * @param   bool    To be wrapped with main template if true
      *
      * @return  text/html $content
-     * @throws \Exception If template file not found
+     * @throws \Exception If template not found
      */
-    public function render($template_path, $data = array(), $wrap = true)
+    public function render($template_path, $data = [], $wrap = true)
     {
         /**
          * Closure for ../src/views/Post/index.html.php template
@@ -79,7 +87,7 @@ class Renderer extends ObjectPool
          * @param array $data
          * @throws \Exception If obtained response is not instance of Response.
          */
-        $include = function ($controller_name, $action, $data = array()) {
+        $include = function ($controller_name, $action, $data = []) {
 
             $response = Service::get('application')->getActionResponse($controller_name, $action, $data);
 

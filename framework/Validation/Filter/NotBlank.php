@@ -9,11 +9,15 @@
 namespace Framework\Validation\Filter;
 
 
+/**
+ * Class NotBlank
+ *
+ * @package Framework\Validation\Filter
+ */
 class NotBlank implements ValidationFilterInterface
 {
     public function isValid($value)
     {
-
         return !empty($value);
     }
 }

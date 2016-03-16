@@ -11,6 +11,11 @@ namespace Framework\Model;
 use Framework\DI\Service;
 use Framework\Exception\DatabaseException;
 
+/**
+ * Class ActiveRecord
+ *
+ * @package Framework\Model
+ */
 abstract class ActiveRecord
 {
     /**
@@ -21,6 +26,7 @@ abstract class ActiveRecord
     public $id;
 
     /**
+     * Get validation rules
      * @return array
      */
     public function getRules()
@@ -30,7 +36,9 @@ abstract class ActiveRecord
 
     /**
      * Find records in database tables
-     * @param string $mode
+     *
+     * @param string $mode Search condition
+     *
      * @return mixed $output
      * @throws DatabaseException If database query returns false
      */
@@ -65,14 +73,13 @@ abstract class ActiveRecord
         return $result;
     }
 
-
     /**
      * Get names of database table fields
+     *
      * @return assoc array
      */
-    public function _getFields()
+    public function getFields()
     {
-
         return get_object_vars($this);
     }
 
@@ -82,11 +89,11 @@ abstract class ActiveRecord
     public function save()
     {
         $set = '';
-        $values = array(); // Assoc array for PDO::prepare()
+        $values = []; // Assoc array for PDO::prepare()
 
         $db = Service::get('db');
         $table = static::getTable();
-        $fields = $this->_getFields();
+        $fields = $this->getFields();
 
         foreach ($fields as $key => $value) {
             if (isset($key)) {
@@ -102,8 +109,9 @@ abstract class ActiveRecord
         $result = $stmt->execute($values);
 
         $class = get_called_class();
-        if ($class === 'Blog\Model\User' && $result == true) {
-            Service::get('security')->setUser($this); // If $route['pattern'] == '/signin'
+
+        if ($class === 'Blog\Model\User' && $result === true) { // If $route['pattern'] == '/signin'
+            Service::get('security')->setUser($this);
         }
         return $result;
     }

@@ -13,13 +13,15 @@ use Framework\ObjectPool;
 
 /**
  * Class Security
+ *
  * @package Framework\Security
  */
 class Security extends ObjectPool
 {
     /**
      * Check if the user is authenticated
-     * @return bool True if authenticated
+     *
+     * @return bool True if the user is authenticated
      */
     public function isAuthenticated()
     {
@@ -54,7 +56,7 @@ class Security extends ObjectPool
      */
     public function clear()
     {
-        $_SESSION = array();
+        $_SESSION = [];
         session_destroy();
     }
 }

@@ -11,28 +11,29 @@ namespace Framework;
 /**
  * Class ObjectPool
  * Load different components via the Object pool pattern
+ *
  * @package Framework
  */
 abstract class ObjectPool
 {
     /**
-     * An associative array.
+     * An assoc array.
      *
      * Key contains a class name.
      * Value contains a class instance.
      * @var array
      */
-    private static $_loaded_instances = array();
+    private static $_loaded_instances = [];
 
     /**
      * Load the class instance.
      *
-     * @param boolean|string $class_name Full class name if present
+     * @param bool|string $class_name Full class name if present
      * @param array $args Arguments if present
      * @return object Return class instance
      * @throws \Exception If class does not exist
      */
-    public static function get($class_name = false, $args = array())
+    public static function get($class_name = false, $args = [])
     {
         $name = ($class_name === false) ? get_called_class() : $class_name;
 

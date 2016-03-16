@@ -10,6 +10,11 @@ namespace Framework\Request;
 
 use Framework\ObjectPool;
 
+/**
+ * Class Request
+ *
+ * @package Framework\Request
+ */
 class Request extends ObjectPool
 {
     public function getMethod()

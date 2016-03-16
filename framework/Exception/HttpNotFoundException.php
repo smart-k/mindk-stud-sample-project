@@ -9,6 +9,11 @@
 namespace Framework\Exception;
 
 
+/**
+ * Class HttpNotFoundException
+ *
+ * @package Framework\Exception
+ */
 class HttpNotFoundException extends \Exception
 {
     protected $code = 404;

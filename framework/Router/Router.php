@@ -10,29 +10,28 @@ namespace Framework\Router;
 
 use Framework\ObjectPool;
 
-
 /**
  * Class Router
+ *
  * @package Framework\Router
  */
 class Router extends ObjectPool
 {
     /**
-     * An associative array.
-     * Contains preliminary mapped routes.
+     * An assoc array.
+     * Contain preliminary mapped routes.
      *
      * @var array
      */
-    protected static $_map = array();
+    protected static $_map = [];
 
     /**
      * Router constructor.
      *
      * @param array $routing_map Contains preliminary mapped routes from config
      */
-    public function __construct($routing_map = array())
+    public function __construct($routing_map = [])
     {
-
         self::$_map = $routing_map;
     }
 
@@ -40,14 +39,14 @@ class Router extends ObjectPool
      * Parse route.
      *
      * @param $uri
-     * @return array $route_found An associative array of route's parameters.
+     * @return array $route_found An assoc array of route's parameters
      */
     public function parseRoute($uri = null)
     {
         $route_found = null;
 
         $uri = empty($uri) ? $_SERVER['REQUEST_URI'] : $uri;
-        $uri = '/' . trim($uri, '/'); // Unified standard: /profile
+        $uri = '/' . trim($uri, '/'); // Unified standard, for example: /profile
 
         foreach (self::$_map as $route) {
             $param_names = $this->_parseParameterName($route); // Parse parameter's names from config's route pattern
@@ -58,15 +57,15 @@ class Router extends ObjectPool
                 $route_found = $route;
 
                 if ($route['pattern'] == '/profile') {
-                    // Taking into account requirements for the type of HTTP request
+                    // Taking into account requirements for the method of HTTP request
                     $route_found = ($_SERVER['REQUEST_METHOD'] == 'POST') ? $route_found = self::$_map['update_profile'] : $route_found = self::$_map['profile'];
                 }
 
-                $route_found['parameters'] = array();
+                $route_found['parameters'] = [];
 
                 if (!empty($param_names)) {
                     array_shift($params);
-                    for ($i = 0; $i < count($params); $i++) { // Prepare array $params  to be able combining with array $param_names
+                    for ($i = 0; $i < count($params); $i++) { // Prepare array $params to be able combining with array $param_names
                         $prepared_params[$i] = $params[$i][0];
                     }
                     $combine_params = array_combine($param_names, $prepared_params);
@@ -98,11 +97,11 @@ class Router extends ObjectPool
     }
 
     /**
-     * Prepare URI pattern.
+     * Prepare URL pattern.
      *
-     * @param string $route URI pattern from config.
-     * @param array $names Route parameter's names from config.
-     * @return string $pattern Prepared URI pattern with considering of pattern requirements for route parameters.
+     * @param string $route URL pattern from config
+     * @param array $names Route parameter's names from config
+     * @return string $pattern Prepared URL pattern with considering of pattern requirements for route's parameters
      */
     private function _prepare($route, $names)
     {

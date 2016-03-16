@@ -9,15 +9,19 @@
 namespace Framework\Validation\Filter;
 
 
+/**
+ * Class Length
+ *
+ * @package Framework\Validation\Filter
+ */
 class Length implements ValidationFilterInterface
 {
-
     protected $min;
     protected $max;
 
     /**
-     * @param $min
-     * @param $max
+     * @param int $min
+     * @param int $max
      */
     public function __construct($min, $max)
     {

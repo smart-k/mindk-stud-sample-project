@@ -8,7 +8,6 @@
 
 namespace Framework\Response;
 
-
 /**
  * Class Response
  *
@@ -19,10 +18,10 @@ class Response
     /**
      * @var array $_headers An array of response headers
      */
-    protected $_headers = array();
+    protected $_headers = [];
 
     /**
-     * @var array An array of status codes and messages
+     * @var array $_msgs An array of status codes and messages
      */
     private static $_msgs = array(
         100 => 'Continue',

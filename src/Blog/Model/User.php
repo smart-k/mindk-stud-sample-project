@@ -31,9 +31,10 @@ class User extends ActiveRecord implements UserInterface
     }
 
     /**
-     * Find records in database table by email attribute
+     * Find record in database table corresponding specified email
      *
      * @param $email
+     *
      * @return mixed
      * @throws DatabaseException If database query returns false
      */

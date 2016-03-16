@@ -10,17 +10,18 @@ namespace Framework;
 
 use Framework\Controller\Controller;
 use Framework\DI\Service;
-use Framework\Exception\DatabaseException;
 use Framework\Response\Response;
 use Framework\Response\ResponseRedirect;
 use Framework\Exception\BadResponseTypeException;
-use Framework\Exception\HttpNotFoundException;
 use Framework\Exception\AuthRequiredException;
+use Framework\Exception\HttpNotFoundException;
+use Framework\Exception\DatabaseException;
 
 
 /**
  * Class Application
  * Front Controller pattern has been implemented.
+ *
  * @package Framework
  */
 class Application extends Controller
@@ -50,6 +51,7 @@ class Application extends Controller
     public function run()
     {
         $route = Service::get('router')->parseRoute();
+
         try {
             if (!empty($route)) {
 
@@ -85,15 +87,16 @@ class Application extends Controller
     }
 
     /**
-     * Invoke obtained controller action with parameters through Reflection and return controller response.
+     * Invoke obtained controller action with parameters via Reflection and return controller response.
      *
      * @param string $controller_name
      * @param string $action
      * @param array $data
+     *
      * @return Response|null
      * @throws \Exception If obtained controller is not subclass of Controller class
      */
-    public function getActionResponse($controller_name, $action, $data = array())
+    public function getActionResponse($controller_name, $action, $data = [])
     {
         $action .= 'Action';
 
@@ -104,8 +107,8 @@ class Application extends Controller
         }
 
         if ($controllerReflection->hasMethod($action)) {
-            // ReflectionMethod::invokeArgs() has overloaded in class ReflectionMethodNamedArgs
-            // Now it provides invoking with named arguments
+            // ReflectionMethod::invokeArgs() has been overloaded in class ReflectionMethodNamedArgs
+            // Now it provides controller action invoking with named arguments
             $actionReflection = new ReflectionMethodNamedArgs($controller_name, $action);
             $controller = $controllerReflection->newInstance();
             $response = $actionReflection->invokeArgs($controller, $data);

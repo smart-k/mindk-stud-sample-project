@@ -9,6 +9,11 @@
 namespace Framework\Validation\Filter;
 
 
+/**
+ * Interface ValidationFilterInterface
+ *
+ * @package Framework\Validation\Filter
+ */
 interface ValidationFilterInterface
 {
     public function isValid($value);

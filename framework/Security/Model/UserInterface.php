@@ -9,6 +9,11 @@
 namespace framework\Security\Model;
 
 
+/**
+ * Interface UserInterface
+ *
+ * @package framework\Security\Model
+ */
 interface UserInterface
 {
     public function getRole();

@@ -16,24 +16,24 @@ use Framework\ObjectPool;
 class Loader
 {
     /**
-     * An associative array.
+     * An assoc array.
      *
      * Key contains a namespace.
-     * Value contains a base directories for the classes in this namespace.
+     * Value contains a base directories for the classes in the key's specified namespace.
      * @var array
      */
-    static private $_namespaces = array();
+    static private $_namespaces = [];
 
     /**
      * Keep instance of the class Loader.
-     * @var Loader|object
+     * @var Loader|null
      */
     static private $_instance = null;
 
     /**
-     * @return Loader|object
+     * @return Loader
      */
-public static function getInstance()
+    public static function getInstance()
     {
         if (empty(self::$_instance)) {
             self::$_instance = new self();
@@ -50,7 +50,7 @@ public static function getInstance()
         spl_autoload_register(array(__CLASS__, '_load'));
     }
 
-    final private function __clone() // We do not need to copy objects so lock it.
+    final private function __clone() // We do not need to copy Loader instance so lock it.
     {
     }
 
@@ -62,7 +62,7 @@ public static function getInstance()
      * @param bool $first If true, add the base directory to the begin of the array. In this case, it will be checked first.
      * @return void
      */
-public static function addNamespacePath($namespace, $base_dir, $first = false)
+    public static function addNamespacePath($namespace, $base_dir, $first = false)
     {
         /**
          * Namespace normalization.
@@ -78,10 +78,10 @@ public static function addNamespacePath($namespace, $base_dir, $first = false)
 
         // Initialize an array of base directories for the classes in this namespace.
         if (empty(self::$_namespaces[$namespace]) === true) {
-            self::$_namespaces[$namespace] = array();
+            self::$_namespaces[$namespace] = [];
         }
 
-        // Adds the base directory to the associative array.
+        // Adds the base directory to the assoc array.
         if ($first) {
             array_unshift(self::$_namespaces[$namespace], $base_dir);
         } else {
@@ -94,7 +94,7 @@ public static function addNamespacePath($namespace, $base_dir, $first = false)
      * @param string $class Full class name.
      * @return mixed If success returns directory path, otherwise returns false.
      */
-public function getPath($class)
+    public function getPath($class)
     {
         return rtrim($this->_load($class, true), '/');
     }
@@ -103,7 +103,7 @@ public function getPath($class)
      * Load a file for a given full class name.
      *
      * @param string $class Full class name.
-     * @param boolean $get_only_path If true - only return path for file to be loaded
+     * @param bool $get_only_path If true - only return path for file to be loaded
      * @return mixed If success returns full file name, otherwise returns false.
      */
     private function _load($class, $get_only_path = false)
@@ -138,14 +138,13 @@ public function getPath($class)
         }
     }
 
-
     /**
      * Load the file that matches namespace prefix and relative class name.
      *
      * @param string $namespace Namespace.
      * @param string $relative_class Relative class name.
-     * @param boolean $get_only_path If true - only return path for file to be loaded
-     * @return mixed False if file was not loaded, otherwise returns the name of the loaded file.
+     * @param bool $get_only_path If true - only return path for file to be loaded
+     * @return mixed False if file has not been loaded, otherwise returns the name of the loaded file.
      */
     private function _loadFile($namespace, $relative_class, $get_only_path)
     {
@@ -178,7 +177,7 @@ public function getPath($class)
      * If file exists then loads it.
      *
      * @param string $file File to load
-     * @param boolean $get_only_path If true - only return path for file to be loaded
+     * @param bool $get_only_path If true - only return path for file to be loaded
      * @return bool True if file exists, otherwise - false
      */
     private function _includeFile($file, $get_only_path)
@@ -194,10 +193,10 @@ public function getPath($class)
     }
 }
 
-// Register base directory for namespace prefix Framework\ ..
+// Register base directory for the namespace prefix Framework\..
 Loader::addNamespacePath('Framework\\', __DIR__);
-$instance = Loader::getInstance();
 // Register autoloader.
+$instance = Loader::getInstance();
 // Add Loader instance to the ObjectPool::_loaded_instances
 ObjectPool::add($instance);
 

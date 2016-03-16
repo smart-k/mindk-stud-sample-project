@@ -12,7 +12,7 @@ namespace Framework\Validation;
 class Validator
 {
     protected $_model;
-    protected $_errors = array();
+    protected $_errors = [];
 
     /**
      * Validator constructor.

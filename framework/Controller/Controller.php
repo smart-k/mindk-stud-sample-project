@@ -8,14 +8,19 @@
 
 namespace Framework\Controller;
 
-use Framework\Response\ResponseRedirect;
 use Framework\Response\Response;
+use Framework\Response\ResponseRedirect;
 use Framework\DI\Service;
 
 
+/**
+ * Class Controller
+ *
+ * @package Framework\Controller
+ */
 abstract class Controller
 {
-    public function __call($methodName, $args = array())
+    public function __call($methodName, $args = [])
     {
         if (method_exists($this, $methodName))
             return call_user_func_array(array($this, $methodName), $args);
@@ -24,12 +29,12 @@ abstract class Controller
     }
 
     /**
-     * Redirect to another url.
-     * Can redirect via a Location header
+     * Redirect to specified URL via a Location header.
      *
-     * @param   string $url The url
-     * @param   string $message The response content
-     * @param   int $code The redirect status code
+     * @param   string $url The URL to redirect
+     * @param   string $message Message for flush if any
+     * @param   int $code Redirect status code
+     *
      * @return  ResponseRedirect
      */
     public static function redirect($url, $message = null, $code = 302)
@@ -46,6 +51,7 @@ abstract class Controller
      *
      * @param string $route_name
      * @param array $params
+     *
      * @return string|null
      */
     public function generateRoute($route_name, $params = null)
@@ -56,16 +62,17 @@ abstract class Controller
     /**
      * Rendering method
      *
-     * @param   string $layout Layout filename
-     * @param   mixed $data Data
+     * @param   string $layout The layout filename
+     * @param   array $data Data
      *
      * @return  Response
      */
-    public function render($layout, $data = array())
+    public function render($layout, $data = [])
     {
         $class = get_called_class();
-        if ($class === 'Framework\Application') {
-            $tplPath = Service::get('renderer')->getErrorTemplatePath(); // Exception rendering if method render has been invoked in Application controller
+
+        if ($class === 'Framework\Application') { // When method render has been invoked in Application controller
+            $tplPath = Service::get('renderer')->getErrorTemplatePath(); // doing exception rendering
         } else {
             $pos = strrpos($class, '\\');
             $tplPath = Service::get('loader')->getPath($class) . '/../views/' . str_replace('Controller', '', substr($class, $pos + 1)) . '/';

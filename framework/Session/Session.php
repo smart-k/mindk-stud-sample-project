@@ -8,9 +8,13 @@
 
 namespace Framework\Session;
 
-
 use Framework\ObjectPool;
 
+/**
+ * Class Session
+ *
+ * @package Framework\Session
+ */
 class Session extends ObjectPool
 {
     public $messages = [];

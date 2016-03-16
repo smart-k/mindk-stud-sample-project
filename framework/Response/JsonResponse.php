@@ -11,7 +11,7 @@ namespace Framework\Response;
 
 /**
  * Class JsonResponse
- * Response represents an HTTP response in JSON format.
+ * JsonResponse represents an HTTP response in JSON format.
  *
  * @package Framework\Response
  */
