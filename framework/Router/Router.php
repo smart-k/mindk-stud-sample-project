@@ -126,7 +126,7 @@ class Router extends ObjectPool
      * Build route.
      *
      * @param string $route_name
-     * @param array $params
+     * @param array|null $params
      *
      * @return string|null
      */

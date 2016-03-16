@@ -20,7 +20,7 @@ class JsonResponse extends Response
     /**
      * JsonResponse constructor.
      *
-     * @param array $data The response data
+     * @param array|null $data The response data
      * @param int $code The response status code
      * @param string $type Content-Type
      */

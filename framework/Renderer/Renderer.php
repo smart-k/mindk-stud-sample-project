@@ -102,7 +102,7 @@ class Renderer extends ObjectPool
          * Closure for login.html.php, signin.html.php and layout.html.php templates
          *
          * @param string $route_name
-         * @param array $params
+         * @param array|null $params
          * @return string|null
          */
         $getRoute = function ($route_name, Array $params = null) {

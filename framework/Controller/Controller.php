@@ -32,7 +32,7 @@ abstract class Controller
      * Redirect to specified URL via a Location header.
      *
      * @param   string $url The URL to redirect
-     * @param   string $message Message for flush if any
+     * @param   string|null $message Message for flush if any
      * @param   int $code Redirect status code
      *
      * @return  ResponseRedirect
@@ -50,7 +50,7 @@ abstract class Controller
      * Generate route.
      *
      * @param string $route_name
-     * @param array $params
+     * @param array|null $params
      *
      * @return string|null
      */
