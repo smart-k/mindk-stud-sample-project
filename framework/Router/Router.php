@@ -46,7 +46,7 @@ class Router extends ObjectPool
     {
         $route_found = null;
 
-        $uri = empty($uri) ? $_SERVER['REQUEST_URI'] : $uri;
+        $uri = $uri ?: $_SERVER['REQUEST_URI'];
         $uri = '/' . trim($uri, '/'); // Unified standard, for example: /profile
 
         foreach (self::$_map as $route) {
@@ -132,7 +132,7 @@ class Router extends ObjectPool
      */
     public function buildRoute($route_name, Array $params = null)
     {
-        $route_build = !empty(Router::$_map[$route_name]['pattern']) ? Router::$_map[$route_name]['pattern'] : null;
+        $route_build = Router::$_map[$route_name]['pattern'] ?: null;
 
         if ($route_build && !empty($params)) {
             foreach ($params as $key => $value) {

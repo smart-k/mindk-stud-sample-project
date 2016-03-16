@@ -25,9 +25,7 @@ class Security extends ObjectPool
      */
     public function isAuthenticated()
     {
-        if (isset($_SESSION["is_authenticated"])) {
-            return $_SESSION["is_authenticated"];
-        } else return false;
+        return isset($_SESSION["is_authenticated"]) ? $_SESSION["is_authenticated"] : false;
     }
 
     /**
@@ -46,9 +44,7 @@ class Security extends ObjectPool
      */
     public function getUser()
     {
-        if (isset($_SESSION["user"])) {
-            return $_SESSION["user"];
-        } else return null;
+        return isset($_SESSION["user"]) ? $_SESSION["user"] : null;
     }
 
     /**

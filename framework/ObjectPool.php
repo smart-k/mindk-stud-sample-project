@@ -28,15 +28,15 @@ abstract class ObjectPool
     /**
      * Load the class instance.
      *
-     * @param bool|string $class_name Full class name if present
+     * @param string|null $class_name Full class name if present
      * @param array $args Arguments if present
      *
      * @return object Return class instance
      * @throws \Exception If class does not exist
      */
-    public static function get($class_name = false, Array $args = [])
+    public static function get($class_name = null, Array $args = [])
     {
-        $name = ($class_name === false) ? get_called_class() : $class_name;
+        $name = $class_name ?: get_called_class();
 
         if (class_exists($name)) {
             if (empty(self::$_loaded_instances[$name])) {

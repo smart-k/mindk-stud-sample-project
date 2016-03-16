@@ -35,10 +35,7 @@ class Loader
      */
     public static function getInstance()
     {
-        if (empty(self::$_instance)) {
-            self::$_instance = new self();
-        }
-        return self::$_instance;
+        return self::$_instance ?: new self();
     }
 
     /**
