@@ -9,6 +9,11 @@
 namespace Framework\Validation;
 
 
+/**
+ * Class Validator
+ *
+ * @package Framework\Validation
+ */
 class Validator
 {
     protected $_model;
@@ -17,6 +22,8 @@ class Validator
     /**
      * Validator constructor.
      * Get ActiveRecord object.
+     *
+     * @param ActiveRecord $model
      */
     public function __construct($model)
     {
@@ -25,12 +32,14 @@ class Validator
 
     /**
      * Validate fields of ActiveRecord object
+     *
+     * @return bool True if all fields of ActiveRecord object are valid
      */
     public function isValid()
     {
         $final_validation_result = true; // Default behavior if validation rules are absent
 
-        $fields = $this->_model->_getFields();
+        $fields = $this->_model->getFields();
         $all_rules = $this->_model->getRules();
 
         foreach ($all_rules as $name => $rules) {

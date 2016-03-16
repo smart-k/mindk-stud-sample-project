@@ -22,16 +22,29 @@ class Request extends ObjectPool
         return $_SERVER['REQUEST_METHOD'];
     }
 
+    /**
+     * @return bool
+     */
     public function isPost()
     {
         return ($this->getMethod() == 'POST');
     }
 
+    /**
+     * @return bool
+     */
     public function isGet()
     {
         return ($this->getMethod() == 'GET');
     }
 
+    /**
+     * Get request headers
+     *
+     * @param string|null $header The header name
+     *
+     * @return string|null The header value
+     */
     public function getHeaders($header = null)
     {
 
@@ -44,16 +57,31 @@ class Request extends ObjectPool
         return $data;
     }
 
-    public function post($varname = '', $filter = 'STRING')
+    /**
+     * Filter request variable
+     *
+     * @param string $varname
+     * @param string $filter_name
+     *
+     * @return string|null
+     */
+    public function post($varname = '', $filter_name = 'STRING')
     {
-        return array_key_exists($varname, $_POST) ? $this->filter($_POST[$varname], $filter) : null;
+        return array_key_exists($varname, $_POST) ? $this->filter($_POST[$varname], $filter_name) : null;
     }
 
-    protected function filter($source, $filter = 'STRING')
+    /**
+     * Filter obtained value
+     *
+     * @param mixed $source
+     * @param string $filter_name
+     * @return mixed|null
+     */
+    protected function filter($source, $filter_name = 'STRING')
     {
         $result = null;
 
-        switch ($filter) {
+        switch ($filter_name) {
             case 'STRING':
                 $result = filter_var((string)$source, FILTER_SANITIZE_STRING);
                 break;

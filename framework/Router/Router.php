@@ -30,7 +30,7 @@ class Router extends ObjectPool
      *
      * @param array $routing_map Contains preliminary mapped routes from config
      */
-    public function __construct($routing_map = [])
+    public function __construct(Array $routing_map = [])
     {
         self::$_map = $routing_map;
     }
@@ -38,8 +38,9 @@ class Router extends ObjectPool
     /**
      * Parse route.
      *
-     * @param $uri
-     * @return array $route_found An assoc array of route's parameters
+     * @param string|null $uri
+     *
+     * @return array|null $route_found An assoc array of route's parameters
      */
     public function parseRoute($uri = null)
     {
@@ -81,6 +82,7 @@ class Router extends ObjectPool
      * Parse parameter's names from config's route pattern
      *
      * @param string $route
+     *
      * @return array|null Route parameter's names
      */
     private function _parseParameterName($route)
@@ -100,7 +102,8 @@ class Router extends ObjectPool
      * Prepare URL pattern.
      *
      * @param string $route URL pattern from config
-     * @param array $names Route parameter's names from config
+     * @param array|null $names Route parameter's names from config
+     *
      * @return string $pattern Prepared URL pattern with considering of pattern requirements for route's parameters
      */
     private function _prepare($route, $names)
@@ -124,9 +127,10 @@ class Router extends ObjectPool
      *
      * @param string $route_name
      * @param array $params
+     *
      * @return string|null
      */
-    public function buildRoute($route_name, $params = null)
+    public function buildRoute($route_name, Array $params = null)
     {
         $route_build = !empty(Router::$_map[$route_name]['pattern']) ? Router::$_map[$route_name]['pattern'] : null;
 

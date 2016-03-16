@@ -24,11 +24,11 @@ class Service
      * Setting the service
      *
      * @param $name
-     * @param mixed $object
+     * @param mixed $service
      */
-    public static function set($name, $object)
+    public static function set($name, $service)
     {
-        self::$_services[$name] = $object;
+        self::$_services[$name] = $service;
     }
 
     /**

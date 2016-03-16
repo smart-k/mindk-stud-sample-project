@@ -45,7 +45,7 @@ class Renderer extends ObjectPool
      *
      * @param array $config
      */
-    public function __construct($config = [])
+    public function __construct(Array $config = [])
     {
         $this->_main_template = $config['main_layout'];
         $this->_error_template = $config['error_500'];
@@ -77,7 +77,7 @@ class Renderer extends ObjectPool
      * @return  text/html $content
      * @throws \Exception If template not found
      */
-    public function render($template_path, $data = [], $wrap = true)
+    public function render($template_path, Array $data = [], $wrap = true)
     {
         /**
          * Closure for ../src/views/Post/index.html.php template
@@ -87,7 +87,7 @@ class Renderer extends ObjectPool
          * @param array $data
          * @throws \Exception If obtained response is not instance of Response.
          */
-        $include = function ($controller_name, $action, $data = []) {
+        $include = function ($controller_name, $action, Array $data = []) {
 
             $response = Service::get('application')->getActionResponse($controller_name, $action, $data);
 
@@ -105,7 +105,7 @@ class Renderer extends ObjectPool
          * @param array $params
          * @return string|null
          */
-        $getRoute = function ($route_name, $params = null) {
+        $getRoute = function ($route_name, Array $params = null) {
             return Service::get('router')->buildRoute($route_name, $params);
         };
 

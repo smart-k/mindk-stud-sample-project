@@ -30,10 +30,11 @@ abstract class ObjectPool
      *
      * @param bool|string $class_name Full class name if present
      * @param array $args Arguments if present
+     *
      * @return object Return class instance
      * @throws \Exception If class does not exist
      */
-    public static function get($class_name = false, $args = [])
+    public static function get($class_name = false, Array $args = [])
     {
         $name = ($class_name === false) ? get_called_class() : $class_name;
 
@@ -49,7 +50,9 @@ abstract class ObjectPool
 
     /**
      * Add already created singleton instance into array $_loaded_instances
+     *
      * @param object $instance Singleton instance
+     *
      * @return object
      */
     public static function add($instance)

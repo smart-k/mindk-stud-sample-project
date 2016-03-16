@@ -16,5 +16,11 @@ namespace Framework\Validation\Filter;
  */
 interface ValidationFilterInterface
 {
+    /**
+     * Check if valid value
+     *
+     * @param mixed $value
+     * @return bool True if valid value
+     */
     public function isValid($value);
 }

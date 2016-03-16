@@ -20,7 +20,7 @@ use Framework\DI\Service;
  */
 abstract class Controller
 {
-    public function __call($methodName, $args = [])
+    public function __call($methodName, Array $args = [])
     {
         if (method_exists($this, $methodName))
             return call_user_func_array(array($this, $methodName), $args);
@@ -54,7 +54,7 @@ abstract class Controller
      *
      * @return string|null
      */
-    public function generateRoute($route_name, $params = null)
+    public function generateRoute($route_name, Array $params = null)
     {
         return Service::get('router')->buildRoute($route_name, $params);
     }
@@ -67,7 +67,7 @@ abstract class Controller
      *
      * @return  Response
      */
-    public function render($layout, $data = [])
+    public function render($layout, Array $data = [])
     {
         $class = get_called_class();
 

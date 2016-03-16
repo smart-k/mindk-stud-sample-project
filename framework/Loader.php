@@ -60,6 +60,7 @@ class Loader
      * @param string $namespace Namespace prefix.
      * @param string $base_dir Base directory for the class files of the namespace.
      * @param bool $first If true, add the base directory to the begin of the array. In this case, it will be checked first.
+     *
      * @return void
      */
     public static function addNamespacePath($namespace, $base_dir, $first = false)
@@ -91,7 +92,9 @@ class Loader
 
     /**
      * Get a directory path for a given full class name.
+     *
      * @param string $class Full class name.
+     *
      * @return mixed If success returns directory path, otherwise returns false.
      */
     public function getPath($class)
@@ -103,7 +106,8 @@ class Loader
      * Load a file for a given full class name.
      *
      * @param string $class Full class name.
-     * @param bool $get_only_path If true - only return path for file to be loaded
+     * @param bool $get_only_path If true - only return path for the file to be loaded
+     *
      * @return mixed If success returns full file name, otherwise returns false.
      */
     private function _load($class, $get_only_path = false)
@@ -144,6 +148,7 @@ class Loader
      * @param string $namespace Namespace.
      * @param string $relative_class Relative class name.
      * @param bool $get_only_path If true - only return path for file to be loaded
+     *
      * @return mixed False if file has not been loaded, otherwise returns the name of the loaded file.
      */
     private function _loadFile($namespace, $relative_class, $get_only_path)
@@ -178,6 +183,7 @@ class Loader
      *
      * @param string $file File to load
      * @param bool $get_only_path If true - only return path for file to be loaded
+     *
      * @return bool True if file exists, otherwise - false
      */
     private function _includeFile($file, $get_only_path)

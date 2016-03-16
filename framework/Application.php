@@ -96,7 +96,7 @@ class Application extends Controller
      * @return Response|null
      * @throws \Exception If obtained controller is not subclass of Controller class
      */
-    public function getActionResponse($controller_name, $action, $data = [])
+    public function getActionResponse($controller_name, $action, Array $data = [])
     {
         $action .= 'Action';
 
