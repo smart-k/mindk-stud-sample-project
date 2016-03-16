@@ -52,7 +52,8 @@ abstract class ActiveRecord
         }
 
         if ($check_query_result === false) {
-            throw new DatabaseException('Database reading error');
+            $error_code = is_numeric($mode) ? $query->errorCode() : $db->errorCode();
+            throw new DatabaseException('Database reading error: ' . $error_code);
         }
 
         $result = $query->fetchAll(\PDO::FETCH_CLASS, get_called_class());

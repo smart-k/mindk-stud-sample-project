@@ -47,7 +47,7 @@ class User extends ActiveRecord implements UserInterface
         $check_query_result = $query->execute();
 
         if ($check_query_result === false) {
-            throw new DatabaseException('Database reading error');
+            throw new DatabaseException('Database reading error: ' . $query->errorCode());
         }
 
         $result = $query->fetchAll(\PDO::FETCH_CLASS, get_called_class());
