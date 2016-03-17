@@ -19,13 +19,6 @@ use Framework\Exception\DatabaseException;
 abstract class ActiveRecord
 {
     /**
-     * Default primary key in database tables
-     *
-     * @var int
-     */
-    public $id;
-
-    /**
      * Get validation rules
      * @return array
      */
@@ -95,6 +88,7 @@ abstract class ActiveRecord
         $table = static::getTable();
         $fields = $this->getFields();
 
+
         foreach ($fields as $key => $value) {
             if (isset($key)) {
                 $set .= "`" . str_replace("`", "``", $key) . "`" . "=:$key, ";
@@ -107,6 +101,10 @@ abstract class ActiveRecord
 
         $stmt = $db->prepare($sql);
         $result = $stmt->execute($values);
+
+        if ($result === false) {
+            throw new DatabaseException('Database writing error: ' . $stmt->errorCode());
+        }
 
         $class = get_called_class();
 

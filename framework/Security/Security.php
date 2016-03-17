@@ -29,26 +29,30 @@ class Security extends ObjectPool
     }
 
     /**
-     * Set authenticated user.
+     * Set user data.
      *
-     * @param object $user
+     * @param array|object $user Assoc array, which contains only some of user data (for example email and user role), or instance of whole user class
+     * @param string $user_session_name Name for user data saved in session
      */
-    public function setUser($user)
+    public function setUser($user, $user_session_name = "user")
     {
-        $_SESSION["user"] = $user;
+        $_SESSION[$user_session_name] = $user;
         $_SESSION["is_authenticated"] = true;
     }
 
     /**
-     * Get authenticated user.
+     * Get user data.
+     * @param string $user_session_name Name for user data saved in session
+     *
+     * @return array|object|null Return user data saved in session (assoc array of user data or instance of whole user class)
      */
-    public function getUser()
+    public function getUser($user_session_name = "user")
     {
-        return isset($_SESSION["user"]) ? $_SESSION["user"] : null;
+        return isset($_SESSION[$user_session_name]) ? $_SESSION[$user_session_name] : null;
     }
 
     /**
-     * Clear session data.
+     * Clear session data when user logout.
      */
     public function clear()
     {
