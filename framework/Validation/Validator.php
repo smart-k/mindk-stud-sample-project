@@ -47,12 +47,18 @@ class Validator
                 foreach ($rules as $rule) {
                     $valid = $rule->isValid($fields[$name]);
                     if ($valid == false) {
+
                         $this->_errors[$name] = ucfirst($name) . ' validation error';
                         $final_validation_result = false;
                     }
                 }
             }
         }
+
+        if ($final_validation_result == false) {
+            $_SESSION['post'] =  $this->_model; // Save filled post fields in session to show them in renderer and give user a chance to correct them
+        }
+
         return $final_validation_result;
     }
 
