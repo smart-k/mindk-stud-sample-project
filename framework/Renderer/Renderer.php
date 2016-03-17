@@ -114,7 +114,7 @@ class Renderer extends ObjectPool
         extract($data);
 
         if (isset($_SESSION['post'])) { // Show filled post fields when validation failed
-            $post = $_SESSION['post'];
+            $post = unserialize($_SESSION['post']);
             unset($_SESSION['post']);
         }
 
