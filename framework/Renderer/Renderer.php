@@ -109,7 +109,7 @@ class Renderer extends ObjectPool
             return Service::get('router')->buildRoute($route_name, $params);
         };
 
-        $token = isset($_SESSION['token']) ? $_SESSION['token']: null;
+        $token = isset($_SESSION['_token']) ? $_SESSION['_token']: null;
 
         /**
          * Closure for add.html.php, login.html.php, signin.html.php templates

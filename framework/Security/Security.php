@@ -34,67 +34,15 @@ class Security extends ObjectPool
     }
 
     /**
-     * Check if the form token is valid
+     * Generate form token
      *
-     * @return bool True if form token is valid
-     */
-    public function verifyFormToken()
-    {
-        if (!isset($_SESSION['token'])) { // Check if a session is started and a token is transmitted, if not return an error
-            return false;
-        }
-
-        if (!isset($_POST['token'])) { // Check if the form is sent with token in it
-            return false;
-        }
-        $token = Service::get('request')->filter($_POST['token']);
-        if ($_SESSION['token'] !== $token) { // Compare the tokens against each other if they are still the same
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Set user data that to be stored in the session.
-     *
-     * @param array|object $user Assoc array, which contains only some of user data (for example email and user role), or whole user class object
-     * @param string $user_session_name Name for user data that to be stored in the session
-     */
-    public function setUser($user, $user_session_name = 'user')
-    {
-        $_SESSION[$user_session_name] = $user;
-        $_SESSION['is_authenticated'] = true;
-
-    }
-
-    /**
-     * Get the user data that are stored in the session.
-     * @param string $user_session_name Name for user data that are stored in the session
-     *
-     * @return array|object|null Return user data that are stored in the session (assoc array or whole user class object)
-     */
-    public function getUser($user_session_name = 'user')
-    {
-        return isset($_SESSION[$user_session_name]) ? $_SESSION[$user_session_name] : null;
-    }
-
-    /**
-     * Clear session data when user logout.
-     */
-    public function clear()
-    {
-        $_SESSION = [];
-        session_destroy();
-    }
-
-    /**
-     * Generate the token
-     *
+     * @param string $form The form name
      * @param string $type The alphabet
      * @param int $length The token length (number of characters)
+     *
      * @return string The token
      */
-    public function random_text($type = 'alnum', $length = 16)
+    public function generateFormToken($form = '', $type = 'alnum', $length = 16)
     {
         switch ($type) {
             case 'alnum':
@@ -135,11 +83,72 @@ class Security extends ObjectPool
         };
 
         $token = "";
+
         $max = strlen($codeAlphabet);
         for ($i = 0; $i < $length; $i++) {
             $token .= $codeAlphabet[$crypto_rand_secure(0, $max)];
         }
 
+        $_SESSION[$form . '_token'] = $token; // Write the generated token to the session variable to check it against the hidden field when the form is sent
+
         return $token;
     }
+
+    /**
+     * Check if the form token is valid
+     *
+     * $param string $form Form name
+     *
+     * @return bool True if form token is valid
+     */
+    public function verifyFormToken($form = '')
+    {
+        if (!isset($_SESSION[$form . '_token'])) { // Check if a session is started and a token is transmitted, if not return an error
+            return false;
+        }
+
+        if (!isset($_POST['token'])) { // Check if the form is sent with token in it
+            return false;
+        }
+        $token = Service::get('request')->filter($_POST['token']);
+        if ($_SESSION[$form . '_token'] !== $token) { // Compare the tokens against each other if they are still the same
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Set user data that to be stored in the session.
+     *
+     * @param array|object $user Assoc array, which contains only some of user data (for example email and user role), or whole user class object
+     * @param string $user_session_name Name for user data that to be stored in the session
+     */
+    public function setUser($user, $user_session_name = 'user')
+    {
+        $_SESSION[$user_session_name] = $user;
+        $_SESSION['is_authenticated'] = true;
+
+    }
+
+    /**
+     * Get the user data that are stored in the session.
+     * @param string $user_session_name Name for user data that are stored in the session
+     *
+     * @return array|object|null Return user data that are stored in the session (assoc array or whole user class object)
+     */
+    public function getUser($user_session_name = 'user')
+    {
+        return isset($_SESSION[$user_session_name]) ? $_SESSION[$user_session_name] : null;
+    }
+
+    /**
+     * Clear session data when user logout.
+     */
+    public function clear()
+    {
+        $_SESSION = [];
+        session_destroy();
+    }
+
+
 }

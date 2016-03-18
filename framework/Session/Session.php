@@ -23,7 +23,7 @@ class Session extends ObjectPool
     public function __construct()
     {
         session_start();
-        $_SESSION['token'] = Service::get('security')->random_text();
+        Service::get('security')->generateFormToken();
     }
 
     public function __set($name, $val)
