@@ -16,7 +16,7 @@
         <input type="email" class="form-control" placeholder="Email address" required autofocus name="email">
         <input type="password" class="form-control" placeholder="Password" required name="password">
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-        <?php //$generateToken()?>
+        <?php $generateToken()?>
     </form>
 
 </div>

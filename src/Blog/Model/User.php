@@ -31,7 +31,7 @@ class User extends ActiveRecord implements UserInterface
     }
 
     /**
-     * Find record in database table which matched specified email
+     * Find record in database table that is matched specified email
      *
      * @param $email
      *

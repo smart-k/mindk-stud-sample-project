@@ -81,7 +81,7 @@ class Request extends ObjectPool
      * @param string $filter_name
      * @return mixed|null
      */
-    protected function filter($source, $filter_name = 'STRING')
+    public function filter($source, $filter_name = 'STRING')
     {
         $result = null;
 

@@ -109,7 +109,18 @@ class Renderer extends ObjectPool
             return Service::get('router')->buildRoute($route_name, $params);
         };
 
-        $user = Service::get('security')->getUser();
+        $token = isset($_SESSION['token']) ? $_SESSION['token']: null;
+
+        /**
+         * Closure for add.html.php, login.html.php, signin.html.php templates
+         * Set token into hidden input field on form template
+         */
+        $generateToken = function () use ($token) {
+            echo '<input type="hidden" name="token" value=' . $token . ' >';
+        };
+
+
+        $user = Service::get('security')->getUser(); // Get the user data that are stored in the session.
 
         extract($data);
 
