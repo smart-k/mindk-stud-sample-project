@@ -44,8 +44,9 @@ class Application extends Controller
         Service::set('loader', ObjectPool::get('Loader'));
         Service::set('renderer', ObjectPool::get('Framework\Renderer\Renderer', Service::get('config')));
         Service::set('request', ObjectPool::get('Framework\Request\Request'));
-        Service::set('session', ObjectPool::get('Framework\Session\Session'));
         Service::set('security', ObjectPool::get('Framework\Security\Security'));
+        Service::set('session', ObjectPool::get('Framework\Session\Session'));
+
 
         extract(Service::get('config')['pdo']);
         $dns .= ';charset=latin1';

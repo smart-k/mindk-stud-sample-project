@@ -8,6 +8,7 @@
 
 namespace Framework\Session;
 
+use Framework\DI\Service;
 use Framework\ObjectPool;
 
 /**
@@ -22,6 +23,7 @@ class Session extends ObjectPool
     public function __construct()
     {
         session_start();
+        $_SESSION['token'] = Service::get('security')->random_text();
     }
 
     public function __set($name, $val)
@@ -34,11 +36,11 @@ class Session extends ObjectPool
         return array_key_exists($name, $_SESSION) ? $_SESSION[$name] : null;
     }
 
-    public function unset_data(Array $names=[])
+    public function unset_data(Array $names = [])
     {
-       foreach($names as $item){
-           unset($_SESSION[$item]);
-       }
+        foreach ($names as $item) {
+            unset($_SESSION[$item]);
+        }
     }
 
     public function addFlush($type, $message)

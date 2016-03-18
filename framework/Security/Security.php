@@ -26,18 +26,32 @@ class Security extends ObjectPool
      */
     public function isAuthenticated()
     {
-        $valid_token = false;
 
-        if (isset($_SESSION['token'])) {
-            $token = Service::get('request')->filter($_POST['token']);
-            $valid_token = ($token == $_SESSION['token']) ? true : false;
+        if ($this->verifyFormToken() == false) {
+            return false;
+        }
+        return isset($_SESSION['is_authenticated']) ? $_SESSION['is_authenticated'] : false;
+    }
+
+    /**
+     * Check if the form token is valid
+     *
+     * @return bool True if form token is valid
+     */
+    public function verifyFormToken()
+    {
+        if (!isset($_SESSION['token'])) { // Check if a session is started and a token is transmitted, if not return an error
+            return false;
         }
 
-        if ($valid_token) {
-            return isset($_SESSION['is_authenticated']) ? $_SESSION['is_authenticated'] : false;
+        if (!isset($_POST['token'])) { // Check if the form is sent with token in it
+            return false;
         }
-
-        return false;
+        $token = Service::get('request')->filter($_POST['token']);
+        if ($_SESSION['token'] !== $token) { // Compare the tokens against each other if they are still the same
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -50,7 +64,7 @@ class Security extends ObjectPool
     {
         $_SESSION[$user_session_name] = $user;
         $_SESSION['is_authenticated'] = true;
-        $_SESSION['token'] = $this->_random_text();
+
     }
 
     /**
@@ -74,11 +88,13 @@ class Security extends ObjectPool
     }
 
     /**
+     * Generate the token
+     *
      * @param string $type The alphabet
      * @param int $length The token length (number of characters)
      * @return string The token
      */
-    private function _random_text($type = 'alnum', $length = 16)
+    public function random_text($type = 'alnum', $length = 16)
     {
         switch ($type) {
             case 'alnum':
