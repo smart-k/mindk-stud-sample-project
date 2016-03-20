@@ -31,25 +31,33 @@ abstract class ActiveRecord
      * Find records in database tables
      *
      * @param string $mode Search condition
+     * @param mixed|null $value Database table field value
      *
-     * @return mixed $output
+     * @return object|null $output
      * @throws DatabaseException If database query returns false
      */
-    public static function find($mode = 'all')
+    public static function find($mode = 'all', $value = null)
     {
         $db = Service::get('db');
         $table = static::getTable();
         $sql = "SELECT * FROM " . $table;
 
-        if (is_numeric($mode)) {
-            $sql .= " WHERE id = :id";
-            $query = $db->prepare($sql);
-            $query->bindParam(":id", $mode, \PDO::PARAM_INT, 11);
-            $check_query_result = $query->execute();
-        } else {
+        if ($mode === 'all') { // Select all records from the database table
             $sql .= " ORDER BY date";
             $query = $db->query($sql);
             $check_query_result = $query;
+        } elseif (is_numeric($mode)) { // Select record from the database table with specified ID
+            $sql .= " WHERE id = :id";
+            $query = $db->prepare($sql);
+            $query->bindParam(":id", $mode);
+            $check_query_result = $query->execute();
+        } elseif (isset($value)) { // Select record from the database table with specified field=>value
+            $sql .= " WHERE {$mode} = :value";
+            $query = $db->prepare($sql);
+            $query->bindParam(":value", $value);
+            $check_query_result = $query->execute();
+        } else {
+            return null;
         }
 
         if ($check_query_result === false) {
@@ -59,11 +67,26 @@ abstract class ActiveRecord
 
         $result = $query->fetchAll(\PDO::FETCH_CLASS, get_called_class());
 
+        if ($mode === 'all') {
+            return $result;
+        }
+
         if (is_numeric($mode) && isset($result[0])) {
             return $result[0];
         }
 
-        return $result;
+        return !empty($result) ? $result[0] : null;
+
+    }
+
+    public static function __callStatic($method, $arguments)
+    {
+        $preg_template = '~^findBy~i';
+
+        if (!empty($field = preg_split($preg_template, $method)[1])) {
+            $field = strtolower($field);
+            return static::find($field, (string)$arguments[0]);
+        }
     }
 
     /**
@@ -113,4 +136,6 @@ abstract class ActiveRecord
         }
         return $result;
     }
+
+
 }

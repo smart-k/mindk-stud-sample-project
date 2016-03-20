@@ -30,30 +30,5 @@ class User extends ActiveRecord implements UserInterface
         return $this->role;
     }
 
-    /**
-     * Find record in database table that is matched specified email
-     *
-     * @param $email
-     *
-     * @return mixed
-     * @throws DatabaseException If database query returns false
-     */
-    public static function findByEmail($email)
-    {
-        $db = Service::get('db');
-        $table = static::getTable();
-        $sql = "SELECT * FROM " . $table . " WHERE email = :email";
-        $query = $db->prepare($sql);
-        $query->bindParam(":email", $email, \PDO::PARAM_STR, 100);
-        $check_query_result = $query->execute();
-
-        if ($check_query_result === false) {
-            throw new DatabaseException('Database reading error: ' . $query->errorCode());
-        }
-
-        $result = $query->fetchAll(\PDO::FETCH_CLASS, get_called_class());
-
-        return empty($result) ? null : $result[0];
-    }
 
 }
