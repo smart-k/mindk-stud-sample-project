@@ -67,7 +67,8 @@ class Application extends Controller
             if (!empty($route)) {
 
                 if (isset($_SESSION[$user_session_name])) { // Check user role on the basis of user data saved in session
-                    $user_role = is_array($_SESSION[$user_session_name]) ? $_SESSION[$user_session_name]['role'] : $_SESSION[$user_session_name]->role;
+                    $user = Service::get('security')->getUser();
+                    $user_role = is_object($user) ? $user->role : $user['role'];
                 }
 
                 if (empty($route['security']) || !empty($route['security']) && $user_role === $route['security'][0]) {

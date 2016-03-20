@@ -125,20 +125,27 @@ class Security extends ObjectPool
      */
     public function setUser($user, $user_session_name = 'user')
     {
-        $_SESSION[$user_session_name] = $user;
+        $_SESSION[$user_session_name] = serialize($user);
         $_SESSION['is_authenticated'] = true;
 
     }
 
     /**
      * Get the user data that are stored in the session.
+     *
      * @param string $user_session_name Name for user data that are stored in the session
      *
      * @return array|object|null Return user data that are stored in the session (assoc array or whole user class object)
      */
     public function getUser($user_session_name = 'user')
     {
-        return isset($_SESSION[$user_session_name]) ? $_SESSION[$user_session_name] : null;
+        $user = null;
+
+        if (isset($_SESSION[$user_session_name])) {
+            $user = unserialize($_SESSION[$user_session_name]);
+        }
+
+        return $user;
     }
 
     /**
