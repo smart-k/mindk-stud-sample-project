@@ -44,28 +44,37 @@ abstract class ActiveRecord
 
         if ($mode === 'all') { // Select all records from the database table
             $sql .= " ORDER BY date";
-            $query = $db->query($sql);
-            $check_query_result = $query;
+            $stmt = $db->query($sql);
+            $check_query_result = $stmt;
         } elseif (is_numeric($mode)) { // Select record from the database table with specified ID
             $sql .= " WHERE id = :id";
-            $query = $db->prepare($sql);
-            $query->bindParam(":id", $mode);
-            $check_query_result = $query->execute();
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(":id", $mode);
+            $check_query_result = $stmt->execute();
         } elseif (isset($value)) { // Select record from the database table with specified field=>value
+            $field_check_query = "SHOW COLUMNS FROM " . $table . " WHERE FIELD = ?";
+            $stmt = $db->prepare($field_check_query);
+            $stmt->execute(array($mode));
+            $check = $stmt->fetchColumn();
+
+            if ($check === false) {
+                throw new DatabaseException("Database reading error. Table '{$table}' does not have the field '{$mode}'");
+            }
+
             $sql .= " WHERE {$mode} = :value";
-            $query = $db->prepare($sql);
-            $query->bindParam(":value", $value);
-            $check_query_result = $query->execute();
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(":value", $value);
+            $check_query_result = $stmt->execute();
         } else {
             return null;
         }
 
         if ($check_query_result === false) {
-            $error_code = is_numeric($mode) ? $query->errorCode() : $db->errorCode();
+            $error_code = is_numeric($mode) ? $stmt->errorCode() : $db->errorCode();
             throw new DatabaseException('Database reading error: ' . $error_code);
         }
 
-        $result = $query->fetchAll(\PDO::FETCH_CLASS, get_called_class());
+        $result = $stmt->fetchAll(\PDO::FETCH_CLASS, get_called_class());
 
         if ($mode === 'all') {
             return $result;
