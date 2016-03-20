@@ -84,7 +84,7 @@ abstract class ActiveRecord
         $preg_template = '~^findBy~i';
 
         if (!empty($field = preg_split($preg_template, $method)[1])) {
-            $field = strtolower($field);
+            $field = strtolower($field); // Get database field name
             return static::find($field, (string)$arguments[0]);
         }
     }
