@@ -68,7 +68,7 @@ class Request extends ObjectPool
     public function post($varname = '', $filter_name = 'STRING')
     {
         if ($varname == 'password') {
-            return array_key_exists($varname, $_POST) ? md5($this->filter($_POST[$varname], $filter_name)) : null;
+            return array_key_exists($varname, $_POST) ? md5($this->filter($_POST[$varname]), $filter_name) : null;
         }
 
         return array_key_exists($varname, $_POST) ? $this->filter($_POST[$varname], $filter_name) : null;
