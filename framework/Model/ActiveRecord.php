@@ -138,11 +138,11 @@ abstract class ActiveRecord
             throw new DatabaseException('Database writing error: ' . $stmt->errorCode());
         }
 
-        $class = get_called_class();
-
-        if ($class === 'Blog\Model\User' && $result === true) { // If $route['pattern'] == '/signin'
-            Service::get('security')->setUser($this);
-        }
+//        $class = get_called_class();
+//
+//        if ($class === 'Blog\Model\User' && $result === true) { // If $route['pattern'] == '/signin'
+//            Service::get('security')->setUser($this);
+//        }
         return $result;
     }
 

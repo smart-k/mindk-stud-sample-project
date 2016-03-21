@@ -59,25 +59,23 @@ class Application extends Controller
     /**
      * @param string $user_session_name Name for user data stored in session
      */
+
     public function run($user_session_name = 'user')
     {
         $route = Service::get('router')->parseRoute();
 
         try {
             if (!empty($route)) {
-
-                if (isset($_SESSION[$user_session_name])) { // Check user role on the basis of user data stored in session
+                if (!empty(Service::get('session')->__get($user_session_name))) {  // Check user role on the basis of user data stored in session
                     $user = Service::get('security')->getUser();
                     $user_role = is_object($user) ? $user->getRole() : $user['role'];
                 }
 
-                if (empty($route['security']) || !empty($route['security']) && $user_role === $route['security'][0]) {
+                if (empty($route['security']) || $user_role === $route['security'][0]) {
 
                     $response = $this->getActionResponse($route['controller'], $route['action'], $route['parameters']);
 
-                    if ($response instanceof Response) {
-                        // ...
-                    } else {
+                    if (!$response instanceof Response) {
                         throw new BadResponseTypeException('Response type not known');
                     }
                 } else {
@@ -92,9 +90,6 @@ class Application extends Controller
             $response = $this->render($code . '.html', array('code' => $code, 'message' => $e->getMessage())); // Render 404
         } catch (AuthRequiredException $e) {
             $response = new ResponseRedirect($this->generateRoute('login')); // Reroute to login page
-        } catch (DatabaseException $e) {
-            $code = '500';
-            $response = $this->render($code . '.html', array('code' => (string)$e->getCode(), 'message' => $e->getMessage())); // Render 500
         } catch (\Exception $e) {
             $code = '500';
             $response = $this->render($code . '.html', array('code' => (string)$e->getCode(), 'message' => $e->getMessage())); // Render 500

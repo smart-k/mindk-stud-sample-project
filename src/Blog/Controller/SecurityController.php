@@ -61,6 +61,7 @@ class SecurityController extends Controller
                 $user->password = $this->getRequest()->post('password');
                 $user->role = 'ROLE_USER';
                 $user->save();
+                Service::get('security')->setUser($user); // Store user data in session
                 return $this->redirect($this->generateRoute('home'));
             } catch (DatabaseException $e) {
                 $errors = array($e->getMessage());
