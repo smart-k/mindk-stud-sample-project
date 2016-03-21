@@ -57,7 +57,7 @@ class Application extends Controller
     }
 
     /**
-     * @param string $user_session_name Name for user data saved in session
+     * @param string $user_session_name Name for user data stored in session
      */
     public function run($user_session_name = 'user')
     {
@@ -66,9 +66,9 @@ class Application extends Controller
         try {
             if (!empty($route)) {
 
-                if (isset($_SESSION[$user_session_name])) { // Check user role on the basis of user data saved in session
+                if (isset($_SESSION[$user_session_name])) { // Check user role on the basis of user data stored in session
                     $user = Service::get('security')->getUser();
-                    $user_role = is_object($user) ? $user->role : $user['role'];
+                    $user_role = is_object($user) ? $user->getRole() : $user['role'];
                 }
 
                 if (empty($route['security']) || !empty($route['security']) && $user_role === $route['security'][0]) {
