@@ -96,7 +96,7 @@ class Security extends ObjectPool
     /**
      * Check if the form token is valid
      *
-     * $param string $form Form name. The default behavior - only one token for all forms (form name is not in use)
+     * @param string $form Form name. The default behavior - only one token for all forms (form name is not in use)
      *
      * @return bool True if form token is valid
      */
@@ -120,7 +120,6 @@ class Security extends ObjectPool
      * Set user data that to be stored in the session.
      *
      * @param array|object $user Assoc array, which contains only some of user data (for example email and user role), or whole user class object
-     * @param string $user_session_name Name for user data that to be stored in the session
      */
     public function setUser($user)
     {
@@ -130,8 +129,6 @@ class Security extends ObjectPool
 
     /**
      * Get the user data that are stored in the session.
-     *
-     * @param string $user_session_name Name for user data that are stored in the session
      *
      * @return array|object|null Return user data that are stored in the session (assoc array or whole user class object)
      */
