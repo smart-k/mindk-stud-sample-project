@@ -26,11 +26,10 @@ class Security extends ObjectPool
      */
     public function isAuthenticated()
     {
-
         if ($this->verifyFormToken() == false) {
             return false;
         }
-        return isset($_SESSION['is_authenticated']) ? $_SESSION['is_authenticated'] : false;
+        return Service::get('session')->is_authenticated ?: false;
     }
 
     /**
@@ -97,21 +96,21 @@ class Security extends ObjectPool
     /**
      * Check if the form token is valid
      *
-     * $param string $form Form name
+     * $param string $form Form name. The default behavior - only one token for all forms (form name is not in use)
      *
      * @return bool True if form token is valid
      */
     public function verifyFormToken($form = '')
     {
-        if (!isset($_SESSION[$form . '_token'])) { // Check if a session is started and a token is transmitted, if not return an error
+        if (!Service::get('session')->__get($form . '_token')) { // Check if a session is started and a token is transmitted, if not return an error
             return false;
         }
 
-        if (!isset($_POST['token'])) { // Check if the form is sent with token in it
+        if (empty($_POST['token'])) { // Check if the form is sent with token in it
             return false;
         }
         $token = Service::get('request')->filter($_POST['token']);
-        if ($_SESSION[$form . '_token'] !== $token) { // Compare the tokens against each other if they are still the same
+        if (Service::get('session')->__get($form . '_token') !== $token) { // Compare the tokens against each other if they are still the same
             return false;
         }
         return true;

@@ -20,6 +20,7 @@ class Session extends ObjectPool
 {
     public $messages = [];
 
+
     public function __construct()
     {
         session_start();
@@ -47,4 +48,6 @@ class Session extends ObjectPool
     {
         $_SESSION['messages'][$type][] = $message;
     }
+
+
 }

@@ -60,10 +60,12 @@ class Renderer extends ObjectPool
      */
     public function renderMain($content)
     {
-        $flush = isset($_SESSION['messages']) ? $_SESSION['messages'] : [];
+        $flush = Service::get('session')->messages ?: [];
+
         if (isset($flush)) {
-            unset($_SESSION['messages']);
+            unset(Service::get('session')->messages);
         }
+
         return $this->render($this->_main_template, compact('flush', 'content'), false);
     }
 
@@ -109,7 +111,7 @@ class Renderer extends ObjectPool
             return Service::get('router')->buildRoute($route_name, $params);
         };
 
-        $token = isset($_SESSION['_token']) ? $_SESSION['_token']: null;
+        $token = Service::get('session')->_token ?: null;
 
         /**
          * Closure for add.html.php, login.html.php, signin.html.php templates
@@ -119,14 +121,13 @@ class Renderer extends ObjectPool
             echo '<input type="hidden" name="token" value=' . $token . ' >';
         };
 
-
         $user = Service::get('security')->getUser(); // Get the user data that are stored in the session.
 
         extract($data);
 
-        if (isset($_SESSION['post'])) { // Show filled post fields when validation failed
-            $post = unserialize($_SESSION['post']);
-            unset($_SESSION['post']);
+        if (Service::get('session')->post) { // Show filled post fields when validation failed
+            $post = unserialize(Service::get('session')->post);
+            unset(Service::get('session')->post);
         }
 
         if (file_exists($template_path)) {
