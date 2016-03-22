@@ -122,11 +122,11 @@ class Security extends ObjectPool
      * @param array|object $user Assoc array, which contains only some of user data (for example email and user role), or whole user class object
      * @param string $user_session_name Name for user data that to be stored in the session
      */
-    public function setUser($user, $user_session_name = 'user')
+    public function setUser($user)
     {
-        $_SESSION[$user_session_name] = serialize($user);
-        $_SESSION['is_authenticated'] = true;
-
+//        $_SESSION[$user_session_name] = serialize($user);
+        Service::get('session')->addUser(serialize($user));
+        Service::get('session')->is_authenticated = true;
     }
 
     /**
@@ -136,12 +136,12 @@ class Security extends ObjectPool
      *
      * @return array|object|null Return user data that are stored in the session (assoc array or whole user class object)
      */
-    public function getUser($user_session_name = 'user')
+    public function getUser()
     {
         $user = null;
 
-        if (isset($_SESSION[$user_session_name])) {
-            $user = unserialize($_SESSION[$user_session_name]);
+        if (Service::get('session')->user) {
+            $user = unserialize(Service::get('session')->user);
         }
 
         return $user;
@@ -152,8 +152,7 @@ class Security extends ObjectPool
      */
     public function clear()
     {
-        $_SESSION = [];
-        session_destroy();
+        Service::get('session')->clear();
     }
 
 

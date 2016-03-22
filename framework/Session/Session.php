@@ -18,9 +18,6 @@ use Framework\ObjectPool;
  */
 class Session extends ObjectPool
 {
-    public $messages = [];
-
-
     public function __construct()
     {
         session_start();
@@ -37,6 +34,16 @@ class Session extends ObjectPool
         return array_key_exists($name, $_SESSION) ? $_SESSION[$name] : null;
     }
 
+    public function addFlush($type, $message)
+    {
+        $_SESSION['messages'][$type][] = $message;
+    }
+
+    public function addUser($userdata)
+    {
+        $_SESSION['user'] = $userdata;
+    }
+
     public function unset_data(Array $names = [])
     {
         foreach ($names as $item) {
@@ -44,10 +51,10 @@ class Session extends ObjectPool
         }
     }
 
-    public function addFlush($type, $message)
+    public function clear()
     {
-        $_SESSION['messages'][$type][] = $message;
+        $_SESSION = [];
+        session_destroy();
     }
-
 
 }
