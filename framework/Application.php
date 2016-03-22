@@ -15,7 +15,6 @@ use Framework\Response\ResponseRedirect;
 use Framework\Exception\BadResponseTypeException;
 use Framework\Exception\AuthRequiredException;
 use Framework\Exception\HttpNotFoundException;
-use Framework\Exception\DatabaseException;
 
 
 /**
@@ -60,13 +59,14 @@ class Application extends Controller
      * @param string $user_session_name Name for user data stored in session
      */
 
-    public function run($user_session_name = 'user')
+    public function run()
     {
         $route = Service::get('router')->parseRoute();
 
         try {
             if (!empty($route)) {
-                if (!empty(Service::get('session')->__get($user_session_name))) {  // Check user role on the basis of user data stored in session
+                if (Service::get('session')->user) {  // Check user role on the basis of user data stored in session
+
                     $user = Service::get('security')->getUser();
                     $user_role = is_object($user) ? $user->getRole() : $user['role'];
                 }

@@ -24,10 +24,10 @@ class JsonResponse extends Response
      * @param int $code The response status code
      * @param string $type Content-Type
      */
-    public function __construct(Array $data = null, $code = 200, $type = 'application/json')
+    public function __construct(Array $data = [], $code = 200, $type = 'application/json')
     {
         parent::__construct('', $code, $type);
-        if ($data === null) {
+        if (empty($data)) {
             $this->code = 500;
             $data = new \ArrayObject();
         }

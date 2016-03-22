@@ -130,7 +130,7 @@ class Router extends ObjectPool
      *
      * @return string|null
      */
-    public function buildRoute($route_name, Array $params = null)
+    public function buildRoute($route_name, Array $params = [])
     {
         $route_build = Router::$_map[$route_name]['pattern'] ?: null;
 

@@ -8,8 +8,9 @@
 
 namespace Framework\Session;
 
-use Framework\DI\Service;
 use Framework\ObjectPool;
+use Framework\DI\Service;
+
 
 /**
  * Class Session

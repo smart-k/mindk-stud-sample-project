@@ -54,7 +54,7 @@ abstract class Controller
      *
      * @return string|null
      */
-    public function generateRoute($route_name, Array $params = null)
+    public function generateRoute($route_name, Array $params = [])
     {
         return Service::get('router')->buildRoute($route_name, $params);
     }

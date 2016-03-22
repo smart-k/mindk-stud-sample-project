@@ -7,6 +7,7 @@
  */
 
 namespace Framework\Validation;
+use Framework\DI\Service;
 
 
 /**
@@ -56,7 +57,7 @@ class Validator
         }
 
         if ($final_validation_result == false) {
-            $_SESSION['post'] = serialize($this->_model); // Save filled post fields in session to show them in renderer and give user a chance to correct them
+             Service::get('session')->post = serialize($this->_model); // Save filled post fields in session to show them in renderer and give user a chance to correct them
         }
 
         return $final_validation_result;

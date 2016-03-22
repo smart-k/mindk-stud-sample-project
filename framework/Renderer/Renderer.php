@@ -63,7 +63,7 @@ class Renderer extends ObjectPool
         $flush = Service::get('session')->messages ?: [];
 
         if (isset($flush)) {
-            unset(Service::get('session')->messages);
+            Service::get('session')->unset_data(array('messages'));
         }
 
         return $this->render($this->_main_template, compact('flush', 'content'), false);
@@ -107,7 +107,7 @@ class Renderer extends ObjectPool
          * @param array|null $params
          * @return string|null
          */
-        $getRoute = function ($route_name, Array $params = null) {
+        $getRoute = function ($route_name, Array $params = []) {
             return Service::get('router')->buildRoute($route_name, $params);
         };
 
@@ -145,6 +145,7 @@ class Renderer extends ObjectPool
                 throw new \Exception('File ' . $this->_main_template . ' not found');
             }
         }
+
         return $content;
     }
 }
