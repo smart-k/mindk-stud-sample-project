@@ -60,13 +60,15 @@ class Renderer extends ObjectPool
      */
     public function renderMain($content)
     {
+        $user = Service::get('security')->getUser(); // Get the user data that are stored in the session.
+
         $flush = Service::get('session')->messages ?: [];
 
         if (isset($flush)) {
             Service::get('session')->unset_data(array('messages'));
         }
 
-        return $this->render($this->_main_template, compact('flush', 'content'), false);
+        return $this->render($this->_main_template, compact('user','flush', 'content'), false);
     }
 
     /**
@@ -120,8 +122,6 @@ class Renderer extends ObjectPool
         $generateToken = function () use ($token) {
             echo '<input type="hidden" name="token" value=' . $token . ' >';
         };
-
-        $user = Service::get('security')->getUser(); // Get the user data that are stored in the session.
 
         extract($data);
 
