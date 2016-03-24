@@ -27,6 +27,8 @@ class Security extends ObjectPool
     public function isAuthenticated()
     {
         if ($this->verifyFormToken() == false) {
+            Service::get('session')->clearToken();
+            Service::get('session')->setToken(Service::get('security')->generateFormToken());
             return false;
         }
         return Service::get('session')->is_authenticated ?: false;
