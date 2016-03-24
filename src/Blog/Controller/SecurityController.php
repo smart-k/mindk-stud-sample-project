@@ -31,7 +31,7 @@ class SecurityController extends Controller
                     Service::get('security')->setUser($user);
                     $returnUrl = Service::get('session')->returnUrl;
                     unset(Service::get('session')->returnUrl);
-                    return $this->redirect(!is_null($returnUrl)?$returnUrl:$this->generateRoute('home'));
+                    return $this->redirect(!is_null($returnUrl) ? $returnUrl : $this->generateRoute('home'));
                 }
             }
 
@@ -52,7 +52,7 @@ class SecurityController extends Controller
         if (Service::get('security')->isAuthenticated()) {
             return new ResponseRedirect($this->generateRoute('home'));
         }
-       $errors = array();
+        $errors = array();
 
         if ($this->getRequest()->isPost()) {
             try {
@@ -61,7 +61,9 @@ class SecurityController extends Controller
                 $user->password = $this->getRequest()->post('password');
                 $user->role = 'ROLE_USER';
                 $user->save();
-                Service::get('security')->setUser($user); // Store user data in session
+
+                Service::get('security')->setUser($user); // Set authentication flag as "true". Store user data in the session.
+
                 return $this->redirect($this->generateRoute('home'));
             } catch (DatabaseException $e) {
                 $errors = array($e->getMessage());

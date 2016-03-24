@@ -8,8 +8,8 @@
 
 namespace Framework\Security;
 
-use Framework\DI\Service;
 use Framework\ObjectPool;
+use Framework\DI\Service;
 
 
 /**
@@ -35,13 +35,12 @@ class Security extends ObjectPool
     /**
      * Generate form token
      *
-     * @param string $form The form name
      * @param string $type The alphabet
      * @param int $length The token length (number of characters)
      *
      * @return string The token
      */
-    public function generateFormToken($form = '', $type = 'alnum', $length = 16)
+    public function generateFormToken($type = 'alnum', $length = 16)
     {
         switch ($type) {
             case 'alnum':
@@ -87,9 +86,6 @@ class Security extends ObjectPool
         for ($i = 0; $i < $length; $i++) {
             $token .= $codeAlphabet[$crypto_rand_secure(0, $max)];
         }
-
-        $_SESSION[$form . '_token'] = $token; // Write the generated token to the session variable to check it against the hidden field when the form is sent
-
         return $token;
     }
 
@@ -102,45 +98,33 @@ class Security extends ObjectPool
      */
     public function verifyFormToken($form = '')
     {
-        if (!Service::get('session')->__get($form . '_token')) { // Check if a session is started and a token is transmitted, if not return an error
+        if (empty(Service::get('session')->getToken($form))) { // Check if a session is started and a token is transmitted, if not return an error
             return false;
         }
 
         if (empty($_POST['token'])) { // Check if the form is sent with token in it
             return false;
         }
+
         $token = Service::get('request')->filter($_POST['token']);
-        if (Service::get('session')->__get($form . '_token') !== $token) { // Compare the tokens against each other if they are still the same
+
+        if (Service::get('session')->getToken($form) !== $token) { // Compare the tokens against each other if they are still the same
             return false;
         }
+
         return true;
     }
 
     /**
+     * Set authenticated status "true".
      * Set user data that to be stored in the session.
      *
      * @param array|object $user Assoc array, which contains only some of user data (for example email and user role), or whole user class object
      */
     public function setUser($user)
     {
-        Service::get('session')->setUser(serialize($user));
+        Service::get('session')->setUser($user);
         Service::get('session')->is_authenticated = true;
-    }
-
-    /**
-     * Get the user data that are stored in the session.
-     *
-     * @return array|object|null Return user data that are stored in the session (assoc array or whole user class object)
-     */
-    public function getUser()
-    {
-        $user = null;
-
-        if (Service::get('session')->user) {
-            $user = unserialize(Service::get('session')->user);
-        }
-
-        return $user;
     }
 
     /**

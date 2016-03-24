@@ -70,9 +70,7 @@ class Application extends Controller
 
         try {
             if (!empty($route)) {
-                if (Service::get('session')->user) {  // Check user role on the basis of user data stored in session
-
-                    $user = Service::get('security')->getUser();
+                if ($user = Service::get('session')->getUser()) {  // Check user role on the basis of user data stored in session
                     $user_role = is_object($user) ? $user->getRole() : $user['role'];
                 }
 

@@ -60,15 +60,10 @@ class Renderer extends ObjectPool
      */
     public function renderMain($content)
     {
-        $user = Service::get('security')->getUser(); // Get the user data that are stored in the session.
-
-        $flush = Service::get('session')->messages ?: [];
-
-        if (isset($flush)) {
-            Service::get('session')->unset_data('messages');
-        }
-
-        return $this->render($this->_main_template, compact('user','flush', 'content'), false);
+        $user = Service::get('session')->getUser(); // Get the user data that are stored in the session.
+        $flush = Service::get('session')->getFlush();
+        Service::get('session')->clearFlush();
+        return $this->render($this->_main_template, compact('user', 'flush', 'content'), false);
     }
 
     /**
@@ -113,7 +108,7 @@ class Renderer extends ObjectPool
             return Service::get('router')->buildRoute($route_name, $params);
         };
 
-        $token = Service::get('session')->_token ?: null;
+        $token = !empty(Service::get('session')->getToken()) ? Service::get('session')->getToken(): null;
 
         /**
          * Closure for add.html.php, login.html.php, signin.html.php templates

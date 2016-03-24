@@ -22,7 +22,7 @@ class Session extends ObjectPool
     public function __construct()
     {
         session_start();
-        Service::get('security')->generateFormToken();
+        $this->setToken(Service::get('security')->generateFormToken());
     }
 
     public function __set($name, $val)
@@ -40,16 +40,54 @@ class Session extends ObjectPool
         $_SESSION['messages'][$type][] = $message;
     }
 
+    public function getFlush()
+    {
+        return isset($_SESSION['messages']) ? $_SESSION['messages'] : [];
+    }
+
+    public function clearFlush()
+    {
+        if (isset($_SESSION['messages'])) {
+            unset($_SESSION['messages']);
+        }
+    }
+
     public function setUser($userdata)
     {
-        $_SESSION['user'] = $userdata;
+        $_SESSION['user'] = serialize($userdata);
+    }
+
+    /**
+     * Get the user data that are stored in the session.
+     *
+     * @return object|array|null
+     */
+    public function getUser()
+    {
+        return isset($_SESSION['user']) ? unserialize($_SESSION['user']) : null;
     }
 
     public function unset_data($name)
     {
+        if (isset($_SESSION[$name])) {
+            unset($_SESSION[$name]);
+        }
+    }
 
-        unset($_SESSION[$name]);
+    /**
+     * Write the generated token to the session variable to check it against the hidden field when the form is sent
+     *
+     * @param string $form Form name. Default behavior - only one token for all forms
+     * @param string $token
+     */
+    public function setToken($token, $form = '')
+    {
+        $_SESSION[$form . '_token'] = $token;
+    }
 
+    public function getToken($form = '')
+    {
+        return isset($_SESSION[$form . '_token']) ? $_SESSION[$form . '_token'] : null;
     }
 
     public function clear()
