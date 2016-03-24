@@ -108,7 +108,7 @@ class Renderer extends ObjectPool
             return Service::get('router')->buildRoute($route_name, $params);
         };
 
-        $token = !empty(Service::get('session')->getToken()) ? Service::get('session')->getToken(): null;
+        $token = !empty(Service::get('session')->getToken()) ? Service::get('session')->getToken() : null;
 
         /**
          * Closure for add.html.php, login.html.php, signin.html.php templates
@@ -120,9 +120,9 @@ class Renderer extends ObjectPool
 
         extract($data);
 
-        if (Service::get('session')->post) { // Show filled post fields when validation failed
-            $post = unserialize(Service::get('session')->post);
-            Service::get('session')->unset_data('post');
+        if (!empty(Service::get('session')->getPost())) { // Show filled post fields when validation failed
+            $post = Service::get('session')->getPost();
+            Service::get('session')->clearPost();
         }
 
         if (file_exists($template_path)) {

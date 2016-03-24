@@ -67,10 +67,27 @@ class Session extends ObjectPool
         return isset($_SESSION['user']) ? unserialize($_SESSION['user']) : null;
     }
 
-    public function unset_data($name)
+    public function clearUser()
     {
-        if (isset($_SESSION[$name])) {
-            unset($_SESSION[$name]);
+        if (isset($_SESSION['user'])) {
+            unset($_SESSION['user']);
+        }
+    }
+
+    public function setPost($postdata)
+    {
+        $_SESSION['post'] = serialize($postdata);
+    }
+
+    public function getPost()
+    {
+        return isset($_SESSION['post']) ? unserialize($_SESSION['post']) : null;
+    }
+
+    public function clearPost()
+    {
+        if (isset($_SESSION['post'])) {
+            unset($_SESSION['post']);
         }
     }
 
@@ -88,6 +105,20 @@ class Session extends ObjectPool
     public function getToken($form = '')
     {
         return isset($_SESSION[$form . '_token']) ? $_SESSION[$form . '_token'] : null;
+    }
+
+    public function clearToken($form = '')
+    {
+        if (isset($_SESSION[$form . '_token'])) {
+            unset($_SESSION[$form . '_token']);
+        }
+    }
+
+    public function unset_data($name)
+    {
+        if (isset($_SESSION[$name])) {
+            unset($_SESSION[$name]);
+        }
     }
 
     public function clear()
