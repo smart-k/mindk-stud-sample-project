@@ -59,7 +59,7 @@ class Router extends ObjectPool
 
                 if ($route['pattern'] == '/profile') {
                     // Taking into account requirements for the method of HTTP request
-                    $route_found = ($_SERVER['REQUEST_METHOD'] == 'POST') ? $route_found = self::$_map['update_profile'] : $route_found = self::$_map['profile'];
+                    $route_found = ($_SERVER['REQUEST_METHOD'] == 'POST') ? self::$_map['update_profile'] : self::$_map['profile'];
                 }
 
                 $route_found['parameters'] = [];

@@ -35,21 +35,21 @@ class Session extends ObjectPool
         return array_key_exists($name, $_SESSION) ? $_SESSION[$name] : null;
     }
 
-    public function addFlush($type, $message)
+    public function setFlush($type, $message)
     {
         $_SESSION['messages'][$type][] = $message;
     }
 
-    public function addUser($userdata)
+    public function setUser($userdata)
     {
         $_SESSION['user'] = $userdata;
     }
 
-    public function unset_data(Array $names = [])
+    public function unset_data($name)
     {
-        foreach ($names as $item) {
-            unset($_SESSION[$item]);
-        }
+
+        unset($_SESSION[$name]);
+
     }
 
     public function clear()

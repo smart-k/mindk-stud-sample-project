@@ -55,6 +55,11 @@ class Application extends Controller
         Service::set('application', $this);
     }
 
+    public function __destruct()
+    {
+        Service::get('db')->this = null;
+    }
+
     /**
      * @param string $user_session_name Name for user data stored in session
      */

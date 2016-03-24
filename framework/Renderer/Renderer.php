@@ -65,7 +65,7 @@ class Renderer extends ObjectPool
         $flush = Service::get('session')->messages ?: [];
 
         if (isset($flush)) {
-            Service::get('session')->unset_data(array('messages'));
+            Service::get('session')->unset_data('messages');
         }
 
         return $this->render($this->_main_template, compact('user','flush', 'content'), false);
@@ -127,7 +127,7 @@ class Renderer extends ObjectPool
 
         if (Service::get('session')->post) { // Show filled post fields when validation failed
             $post = unserialize(Service::get('session')->post);
-            unset(Service::get('session')->post);
+            Service::get('session')->unset_data('post');
         }
 
         if (file_exists($template_path)) {

@@ -42,7 +42,7 @@ abstract class Controller
         if (empty($url)) {
             throw new \InvalidArgumentException('Cannot redirect to an empty URL.');
         }
-        if (isset($message)) Service::get('session')->addFlush('info', $message);
+        if (isset($message)) Service::get('session')->setFlush('info', $message);
         return new ResponseRedirect($url, $code);
     }
 

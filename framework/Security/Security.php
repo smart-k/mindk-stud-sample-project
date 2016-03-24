@@ -123,7 +123,7 @@ class Security extends ObjectPool
      */
     public function setUser($user)
     {
-        Service::get('session')->addUser(serialize($user));
+        Service::get('session')->setUser(serialize($user));
         Service::get('session')->is_authenticated = true;
     }
 
