@@ -70,13 +70,8 @@ abstract class Controller
     public function render($layout, Array $data = [])
     {
         $class = get_called_class();
-
-        if ($class === 'Framework\Application') { // When method render has been invoked in Application controller
-            $tplPath = Service::get('renderer')->getErrorTemplatePath(); // doing exception rendering
-        } else {
-            $pos = strrpos($class, '\\');
-            $tplPath = Service::get('loader')->getPath($class) . '/../views/' . str_replace('Controller', '', substr($class, $pos + 1)) . '/';
-        }
+        $pos = strrpos($class, '\\');
+        $tplPath = Service::get('loader')->getPath($class) . '/../views/' . str_replace('Controller', '', substr($class, $pos + 1)) . '/';
         $full_path = realpath($tplPath . $layout . '.php');
         $content = Service::get('renderer')->render($full_path, $data);
         return new Response($content);

@@ -8,8 +8,8 @@
 
 namespace Framework;
 
-use Framework\Controller\Controller;
 use Framework\DI\Service;
+use Framework\Event\Observable;
 use Framework\Response\Response;
 use Framework\Response\ResponseRedirect;
 use Framework\Exception\BadResponseTypeException;
@@ -23,7 +23,7 @@ use Framework\Exception\HttpNotFoundException;
  *
  * @package Framework
  */
-class Application extends Controller
+class Application extends Observable
 {
     /**
      * Application constructor.
@@ -70,6 +70,7 @@ class Application extends Controller
 
         try {
             if (!empty($route)) {
+
                 if ($user = Service::get('session')->getUser()) {  // Check user role on the basis of user data stored in session
                     $user_role = is_object($user) ? $user->getRole() : $user['role'];
                 }
@@ -90,12 +91,12 @@ class Application extends Controller
             }
         } catch (HttpNotFoundException $e) {
             $code = (string)$e->getCode();
-            $response = $this->render($code . '.html', array('code' => $code, 'message' => $e->getMessage())); // Render 404
+            $response = $this->renderException($code . '.html', array('code' => $code, 'message' => $e->getMessage())); // Render 404
         } catch (AuthRequiredException $e) {
-            $response = new ResponseRedirect($this->generateRoute('login')); // Reroute to login page
+            $response = new ResponseRedirect(Service::get('router')->buildRoute('login')); // Reroute to login page
         } catch (\Exception $e) {
             $code = '500';
-            $response = $this->render($code . '.html', array('code' => (string)$e->getCode(), 'message' => $e->getMessage())); // Render 500
+            $response = $this->renderException($code . '.html', array('code' => (string)$e->getCode(), 'message' => $e->getMessage())); // Render 500
         }
         $response->send();
     }
@@ -129,6 +130,21 @@ class Application extends Controller
             return $response;
         }
         return null;
+    }
+
+    /**
+     * Do exception rendering
+     *
+     * @param string $layout The layout filename
+     * @param array $data Data
+     *
+     * @return Response
+     */
+    public function renderException($layout, Array $data = [])
+    {
+        $full_path = realpath(Service::get('renderer')->getErrorTemplatePath() . $layout . '.php');
+        $content = Service::get('renderer')->render($full_path, $data);
+        return new Response($content);
     }
 }
 
