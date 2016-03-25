@@ -8,45 +8,48 @@
 
 namespace Framework\Event;
 
+use Framework\ObjectPool;
 
-class Observable
+/**
+ * Class Observable
+ *
+ * @package Framework\Event
+ */
+class Observable extends ObjectPool
 {
     /**
-     * @var array   Handlers pool
+     * @var array The event's handlers pool
      */
-    protected $handlers = array();
+    protected $_handlers = [];
 
     /**
      * Register new handler for an event
      *
-     * @param $event_type
-     * @param $handler_class
+     * @param string $event_type The event's type
+     * @param string $handler_class The event's handler class
      */
     public function addHandler($event_type, $handler_class)
     {
-
-        $this->handlers[$event_type][] = $handler_class;
+        $this->_handlers[$event_type][] = $handler_class;
     }
 
     /**
-     * Initiates the process of handling the event
+     * Initiate the process of handling the event
      *
-     * @param $event_name
-     * @param $subject
+     * @param string $event_type The event's type
+     * @param object $subject The event's data
      */
-    public function triggerEvent($event_name, $subject)
+    public function triggerEvent($event_type, $subject)
     {
+        if (!empty($this->_handlers[$event_type])) {
 
-        if (!empty($this->handlers[$event_name])) {
-
-            $event = new Event($event_name, $subject);
-            $handlers = $this->handlers[$event_name];
+            $event = new Event($event_type, $subject);
+            $handlers = $this->_handlers[$event_type];
 
             do {
                 $handler_class = array_shift($handlers);
 
                 if (class_exists($handler_class)) {
-
                     $handler = new $handler_class();
                     $handler->handle($event);
                 }

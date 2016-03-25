@@ -31,7 +31,6 @@ class Length implements ValidationFilterInterface
 
     public function isValid($value)
     {
-
         return (strlen($value) >= $this->min) && (strlen($value) <= $this->max);
     }
 }

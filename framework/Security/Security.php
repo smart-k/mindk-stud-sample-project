@@ -26,7 +26,7 @@ class Security extends ObjectPool
      */
     public function isAuthenticated()
     {
-        if ($this->verifyFormToken() == false) {
+        if ($this->verifyFormToken() === false) {
             Service::get('session')->clearToken();
             Service::get('session')->setToken(Service::get('security')->generateFormToken());
             return false;
@@ -100,11 +100,11 @@ class Security extends ObjectPool
      */
     public function verifyFormToken($form = '')
     {
-        if (empty(Service::get('session')->getToken($form))) { // Check if a session is started and a token is transmitted, if not return an error
+        if (empty(Service::get('session')->getToken($form))) { // Check if session is started and token is transmitted, if not return an error
             return false;
         }
 
-        if (empty($_POST['token'])) { // Check if the form is sent with token in it
+        if (empty($_POST['token'])) { // Check if form is sent with token in it
             return false;
         }
 
@@ -119,7 +119,7 @@ class Security extends ObjectPool
 
     /**
      * Set authenticated status "true".
-     * Set user data that to be stored in the session.
+     * Store user data in the session.
      *
      * @param array|object $user Assoc array, which contains only some of user data (for example email and user role), or whole user class object
      */

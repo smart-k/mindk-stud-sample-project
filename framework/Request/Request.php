@@ -47,7 +47,6 @@ class Request extends ObjectPool
      */
     public function getHeaders($header = null)
     {
-
         $data = apache_request_headers();
 
         if (!empty($header)) {
@@ -79,6 +78,7 @@ class Request extends ObjectPool
      *
      * @param mixed $source
      * @param string $filter_name
+     *
      * @return mixed|null
      */
     public function filter($source, $filter_name = 'STRING')
@@ -101,5 +101,4 @@ class Request extends ObjectPool
         return $result;
 
     }
-
 }

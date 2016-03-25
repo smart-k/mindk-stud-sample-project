@@ -8,7 +8,6 @@
 
 namespace Framework\Validation\Filter;
 
-
 /**
  * Interface ValidationFilterInterface
  *

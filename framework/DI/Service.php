@@ -10,18 +10,19 @@ namespace Framework\DI;
 
 /**
  * Class Service
+ * Service Locator pattern has been implemented.
  *
  * @package Framework
  */
 class Service
 {
     /**
-     * @var array   Services
+     * @var array The services
      */
     protected static $_services = [];
 
     /**
-     * Setting the service
+     * Set the service
      *
      * @param $name
      * @param mixed $service
@@ -32,7 +33,7 @@ class Service
     }
 
     /**
-     * Getting the service
+     * Get the service
      *
      * @param $name
      * @return object|null

@@ -10,7 +10,7 @@ namespace Framework;
 
 /**
  * Class ReflectionMethodNamedArgs
- * Providing reflection and invoking controller action with named arguments.
+ * Provide reflection and invoking controller action with named arguments.
  *
  * @package Framework
  */

@@ -6,9 +6,16 @@
  * Time: 12:39
  */
 
-namespace Framework\Event;
+namespace Framework\Event\EventHandler;
+
+use Framework\Event\Event;
 
 
+/**
+ * Interface EventHandler
+ *
+ * @package Framework\Event
+ */
 interface EventHandler
 {
     function handle(Event &$event);

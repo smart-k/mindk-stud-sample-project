@@ -18,10 +18,7 @@ use Framework\ObjectPool;
 class Router extends ObjectPool
 {
     /**
-     * An assoc array.
-     * Contain preliminary mapped routes.
-     *
-     * @var array
+     * @var array $_map An assoc array. Contain preliminary mapped routes.
      */
     protected static $_map = [];
 

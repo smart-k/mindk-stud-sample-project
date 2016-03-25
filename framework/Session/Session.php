@@ -35,11 +35,22 @@ class Session extends ObjectPool
         return array_key_exists($name, $_SESSION) ? $_SESSION[$name] : null;
     }
 
+    /**
+     * Set the flush messages in the session.
+     *
+     * @param $type
+     * @param $message
+     */
     public function setFlush($type, $message)
     {
         $_SESSION['messages'][$type][] = $message;
     }
 
+    /**
+     * Get the flush messages that are stored in the session.
+     *
+     * @return array
+     */
     public function getFlush()
     {
         return isset($_SESSION['messages']) ? $_SESSION['messages'] : [];
@@ -52,6 +63,11 @@ class Session extends ObjectPool
         }
     }
 
+    /**
+     * Store the user data in the session.
+     *
+     * @param $userdata
+     */
     public function setUser($userdata)
     {
         $_SESSION['user'] = serialize($userdata);
@@ -74,11 +90,21 @@ class Session extends ObjectPool
         }
     }
 
+    /**
+     * Store the post data in the session.
+     *
+     * @param $postdata Post
+     */
     public function setPost($postdata)
     {
         $_SESSION['post'] = serialize($postdata);
     }
 
+    /**
+     * Get the post data that are stored in the session.
+     *
+     * @return Post|null
+     */
     public function getPost()
     {
         return isset($_SESSION['post']) ? unserialize($_SESSION['post']) : null;

@@ -21,17 +21,19 @@ use Framework\DI\Service;
 class Renderer extends ObjectPool
 {
     /**
-     * @var string  Main wrapper template file location
+     * @var string  The file location of the main wrapper template
      */
     protected $_main_template = '';
 
     /**
-     * @var string  Error template file location
+     * @var string  The file location of the error template
      */
     protected $_error_template = '';
 
     /**
-     * @return string Error template directory location
+     * Get path to the error template
+     *
+     * @return string The error template directory location
      */
     public function getErrorTemplatePath()
     {
@@ -52,7 +54,7 @@ class Renderer extends ObjectPool
     }
 
     /**
-     * Render main template with specified content
+     * Render main wrapper template with specified content
      *
      * @param $content
      *
@@ -61,7 +63,7 @@ class Renderer extends ObjectPool
     public function renderMain($content)
     {
         $user = Service::get('session')->getUser(); // Get the user data that are stored in the session.
-        $flush = Service::get('session')->getFlush();
+        $flush = Service::get('session')->getFlush(); // Get the flush messages that are stored in the session.
         Service::get('session')->clearFlush();
         return $this->render($this->_main_template, compact('user', 'flush', 'content'), false);
     }
@@ -69,7 +71,7 @@ class Renderer extends ObjectPool
     /**
      * Render specified template with data provided
      *
-     * @param   string $template_path Template path (full)
+     * @param   string $template_path Template full path
      * @param   array $data Data
      * @param   bool    To be wrapped with main template if true
      *
@@ -84,6 +86,7 @@ class Renderer extends ObjectPool
          * @param string $controller_name
          * @param string $action
          * @param array $data
+         *
          * @throws \Exception If obtained response is not instance of Response.
          */
         $include = function ($controller_name, $action, Array $data = []) {
@@ -102,6 +105,7 @@ class Renderer extends ObjectPool
          *
          * @param string $route_name
          * @param array|null $params
+         *
          * @return string|null
          */
         $getRoute = function ($route_name, Array $params = []) {

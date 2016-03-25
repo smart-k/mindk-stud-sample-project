@@ -9,7 +9,6 @@
 namespace Framework;
 
 use Framework\DI\Service;
-use Framework\Event\Observable;
 use Framework\Response\Response;
 use Framework\Response\ResponseRedirect;
 use Framework\Exception\BadResponseTypeException;
@@ -23,7 +22,7 @@ use Framework\Exception\HttpNotFoundException;
  *
  * @package Framework
  */
-class Application extends Observable
+class Application
 {
     /**
      * Application constructor.
@@ -45,24 +44,28 @@ class Application extends Observable
         Service::set('request', ObjectPool::get('Framework\Request\Request'));
         Service::set('security', ObjectPool::get('Framework\Security\Security'));
         Service::set('session', ObjectPool::get('Framework\Session\Session'));
-
+        Service::set('event', ObjectPool::get('Framework\Event\Observable'));
+        Service::set('application', $this);
 
         extract(Service::get('config')['pdo']);
         $dns .= ';charset=latin1';
         $db = new \PDO($dns, $user, $password);
-
         Service::set('db', $db);
-        Service::set('application', $this);
+
+        $event = Service::get('event');
+
+        foreach (Service::get('config')['events'] as $type => $handler) {
+            foreach ($handler as $class) {
+                $event->addHandler($type, $class);
+            }
+        }
+        $event->triggerEvent('app.init', $db);
     }
 
     public function __destruct()
     {
-        Service::get('db')->this = null;
+        Service::get('event')->triggerEvent('app.exit', Service::get('db'));
     }
-
-    /**
-     * @param string $user_session_name Name for user data stored in session
-     */
 
     public function run()
     {
@@ -71,7 +74,7 @@ class Application extends Observable
         try {
             if (!empty($route)) {
 
-                if ($user = Service::get('session')->getUser()) {  // Check user role on the basis of user data stored in session
+                if ($user = Service::get('session')->getUser()) {  // Check the user role on the basis of user data stored in session
                     $user_role = is_object($user) ? $user->getRole() : $user['role'];
                 }
 
@@ -136,14 +139,15 @@ class Application extends Observable
      * Do exception rendering
      *
      * @param string $layout The layout filename
-     * @param array $data Data
+     * @param array $data The data
      *
      * @return Response
      */
     public function renderException($layout, Array $data = [])
     {
-        $full_path = realpath(Service::get('renderer')->getErrorTemplatePath() . $layout . '.php');
-        $content = Service::get('renderer')->render($full_path, $data);
+        $renderer = Service::get('renderer');
+        $full_path = realpath($renderer->getErrorTemplatePath() . $layout . '.php');
+        $content = $renderer->render($full_path, $data);
         return new Response($content);
     }
 }

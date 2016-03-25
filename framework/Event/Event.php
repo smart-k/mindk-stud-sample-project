@@ -9,49 +9,62 @@
 namespace Framework\Event;
 
 
+/**
+ * Class Event
+ *
+ * @package Framework\Event
+ */
 class Event
 {
+    /**
+     * @var string The event's type
+     */
     public $type;
-    protected $subject;
-    protected $stopped = false;
+
+    /**
+     * @var null|object The event's data
+     */
+    protected $_subject;
+
+    /**
+     * @var bool True if stop event propagation
+     */
+    protected $_stopped = false;
 
     /**
      * Event class constructor
      *
-     * @param $event_type
-     * @param null $subject
+     * @param string $event_type
+     * @param null|object $subject
      */
     public function __construct($event_type, $subject = null)
     {
-
         $this->type = $event_type;
-        $this->subject = $subject;
+        $this->_subject = $subject;
     }
 
     /**
-     * Event stop
+     * Stop event propagation
      */
     public function stopPropagation()
     {
-
-        $this->stopped = true;
+        $this->_stopped = true;
     }
 
     /**
-     * Detects event's status
+     * Detect event's status
      */
     public function isStopped()
     {
-
-        return $this->stopped;
+        return $this->_stopped;
     }
 
     /**
-     * Get event data
+     * Get event's data
      */
     public function getSubject()
     {
-        return $this->subject;
+        return $this->_subject;
     }
 
 }

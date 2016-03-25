@@ -6,7 +6,7 @@
  * Time: 14:29
  */
 
-namespace framework\Security\Model;
+namespace Framework\Security\Model;
 
 
 /**

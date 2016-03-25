@@ -32,8 +32,8 @@ abstract class Controller
      * Redirect to specified URL via a Location header.
      *
      * @param   string $url The URL to redirect
-     * @param   string|null $message Message for flush if any
-     * @param   int $code Redirect status code
+     * @param   string|null $message The message for flush if any
+     * @param   int $code The redirect status code
      *
      * @return  ResponseRedirect
      */
@@ -60,10 +60,10 @@ abstract class Controller
     }
 
     /**
-     * Rendering method
+     * Render data
      *
      * @param   string $layout The layout filename
-     * @param   array $data Data
+     * @param   array $data The data
      *
      * @return  Response
      */
