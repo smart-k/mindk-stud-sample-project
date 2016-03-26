@@ -19,10 +19,31 @@ use Framework\DI\Service;
  */
 class Session extends ObjectPool
 {
+    const SESSION_LIFE_TIME = 3600;
+    const SESSION_NAME = 'SES';
+
     public function __construct()
     {
-        session_start();
+        $this->_startSession();
         $this->setToken(Service::get('security')->generateFormToken());
+    }
+
+    /**
+     * Start session
+     *
+     * @param int $time The session lifetime in seconds
+     * @param string $ses The session name
+     */
+    private function _startSession($time = self::SESSION_LIFE_TIME, $ses = self::SESSION_NAME)
+    {
+        ini_set('php_flag session.cookie_httponly', 'on');
+        session_set_cookie_params($time);
+        session_name($ses);
+        session_start();
+
+        // Reset the expiration time upon page load
+        if (isset($_COOKIE[$ses]))
+            setcookie($ses, $_COOKIE[$ses], time() + $time, "/");
     }
 
     public function __set($name, $val)
