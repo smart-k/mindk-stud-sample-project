@@ -25,7 +25,11 @@ class Session extends ObjectPool
     public function __construct()
     {
         $this->_startSession();
-        $this->setToken(Service::get('security')->generateFormToken());
+        if (empty($this->getSessionToken())) {
+            $token = Service::get('security')->generateFormToken();
+            $this->setSessionToken($token);
+            $this->setCookieToken($token);
+        }
     }
 
     /**
@@ -42,8 +46,9 @@ class Session extends ObjectPool
         session_start();
 
         // Reset the expiration time upon page load
-        if (isset($_COOKIE[$ses]))
+        if (isset($_COOKIE[$ses])) {
             setcookie($ses, $_COOKIE[$ses], time() + $time, "/");
+        }
     }
 
     public function __set($name, $val)
@@ -144,17 +149,33 @@ class Session extends ObjectPool
      * @param string $form Form name. Default behavior - only one token for all forms
      * @param string $token
      */
-    public function setToken($token, $form = '')
+    public function setSessionToken($token, $form = '')
     {
         $_SESSION[$form . '_token'] = $token;
     }
 
-    public function getToken($form = '')
+    /**
+     * Write the generated token to the cookie variable to check it against the hidden field when the form is sent
+     *
+     * @param string $form Form name. Default behavior - only one token for all forms
+     * @param string $token
+     */
+    public function setCookieToken($token, $form = '')
+    {
+        setcookie($form . '_token', $token);
+    }
+
+    public function getSessionToken($form = '')
     {
         return isset($_SESSION[$form . '_token']) ? $_SESSION[$form . '_token'] : null;
     }
 
-    public function clearToken($form = '')
+    public function getCookieToken($form = '')
+    {
+        return isset($_COOKIE[$form . '_token']) ? $_COOKIE[$form . '_token'] : null;
+    }
+
+    public function clearSessionToken($form = '')
     {
         if (isset($_SESSION[$form . '_token'])) {
             unset($_SESSION[$form . '_token']);
@@ -168,10 +189,12 @@ class Session extends ObjectPool
         }
     }
 
-    public function clear()
+    public function clear($form = '')
     {
         $_SESSION = [];
         session_destroy();
+
+        setcookie($form . '_token', "", 1); // Set the expiration date to 1-st January 1970
     }
 
 }

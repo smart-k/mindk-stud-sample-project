@@ -28,10 +28,15 @@ class Security extends ObjectPool
     {
         $auth = $this->verifyFormToken();
 
-        Service::get('session')->clearToken();
-        Service::get('session')->setToken(Service::get('security')->generateFormToken());
+        Service::get('session')->clearSessionToken();
 
-        return $auth ? Service::get('session')->is_authenticated : false;
+        $token = Service::get('security')->generateFormToken();
+
+        Service::get('session')->setSessionToken($token);
+        Service::get('session')->setCookieToken($token);
+
+
+        return $auth == true ? Service::get('session')->is_authenticated : false;
     }
 
     /**
@@ -100,7 +105,7 @@ class Security extends ObjectPool
      */
     public function verifyFormToken($form = '')
     {
-        if (empty(Service::get('session')->getToken($form))) { // Check if session is started and token is transmitted, if not return an error
+        if (empty($post_token = Service::get('session')->getSessionToken($form))) { // Check if session is started and token is transmitted, if not return an error
             return false;
         }
 
@@ -108,13 +113,14 @@ class Security extends ObjectPool
             return false;
         }
 
-        $token = Service::get('request')->filter($_POST['token']);
+        $cookie_token = Service::get('session')->getCookieToken($form);
+        $session_token = Service::get('session')->getSessionToken($form);
 
-        if (Service::get('session')->getToken($form) !== $token) { // Compare the tokens against each other if they are still the same
-            return false;
+        if (empty($cookie_token)) {
+            return $session_token == $post_token; // Compare the tokens against each other if they are still the same
+        } else {
+            return $session_token == $post_token ? ($cookie_token == $session_token) : false;
         }
-
-        return true;
     }
 
     /**

@@ -112,7 +112,7 @@ class Renderer extends ObjectPool
             return Service::get('router')->buildRoute($route_name, $params);
         };
 
-        $token = !empty(Service::get('session')->getToken()) ? Service::get('session')->getToken() : null;
+        $token = !empty(Service::get('session')->getSessionToken()) ? Service::get('session')->getSessionToken() : null;
 
         /**
          * Closure for add.html.php, login.html.php, signin.html.php templates
