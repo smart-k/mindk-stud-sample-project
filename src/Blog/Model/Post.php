@@ -24,7 +24,7 @@ class Post extends ActiveRecord
     }
 
     public function getRules()
-    {
+     {
         return array(
             'title'   => array(
                 new NotBlank(),

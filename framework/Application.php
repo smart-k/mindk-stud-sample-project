@@ -8,74 +8,147 @@
 
 namespace Framework;
 
-use Framework\Controller\Controller;
+use Framework\DI\Service;
 use Framework\Response\Response;
 use Framework\Response\ResponseRedirect;
 use Framework\Exception\BadResponseTypeException;
+use Framework\Exception\AuthRequiredException;
 use Framework\Exception\HttpNotFoundException;
-use Framework\Exception\AuthRequredException;
-use Framework\DI\Service;
-
 
 
 /**
  * Class Application
- * Front Controller pattern implemented.
+ * Front Controller pattern has been implemented.
+ *
  * @package Framework
  */
-class Application extends Controller
+class Application
 {
-    function run()
+    /**
+     * Application constructor.
+     * Set required services.
+     *
+     * @param string $config_path
+     */
+    public function __construct($config_path)
     {
-        $this->_setServices();
+        Service::set('config', include($config_path));
 
+        if (Service::get('config')['mode'] === 'prod') {
+            ini_set('php_flag display_errors', 'off');
+        }
+
+        Service::set('router', ObjectPool::get('Framework\Router\Router', Service::get('config')['routes']));
+        Service::set('loader', ObjectPool::get('Loader'));
+        Service::set('renderer', ObjectPool::get('Framework\Renderer\Renderer', Service::get('config')));
+        Service::set('request', ObjectPool::get('Framework\Request\Request'));
+        Service::set('security', ObjectPool::get('Framework\Security\Security'));
+        Service::set('session', ObjectPool::get('Framework\Session\Session'));
+        Service::set('event', ObjectPool::get('Framework\Event\Observable'));
+        Service::set('application', $this);
+
+        extract(Service::get('config')['pdo']);
+        $dns .= ';charset=latin1';
+        $db = new \PDO($dns, $user, $password);
+        Service::set('db', $db);
+
+        $event = Service::get('event');
+
+        foreach (Service::get('config')['events'] as $type => $handler) {
+            foreach ($handler as $class) {
+                $event->addHandler($type, $class);
+            }
+        }
+        $event->triggerEvent('app.init', $db);
+    }
+
+    public function __destruct()
+    {
+        Service::get('event')->triggerEvent('app.exit', Service::get('db'));
+    }
+
+    public function run()
+    {
         $route = Service::get('router')->parseRoute();
+
         try {
             if (!empty($route)) {
-                $controllerReflection = new \ReflectionClass($route['controller']);
 
-                if (!$controllerReflection->isSubclassOf('Framework\Controller\Controller')) {
-                    throw new \Exception("Unknown controller " . $controllerReflection->name);
+                if ($user = Service::get('session')->getUser()) {  // Check the user role on the basis of user data stored in session
+                    $user_role = is_object($user) ? $user->getRole() : $user['role'];
                 }
 
-                $action = $route['action'] . 'Action';
+                if (empty($route['security']) || $user_role === $route['security'][0]) {
 
-                if ($controllerReflection->hasMethod($action)) {
-                    // ReflectionMethod::invokeArgs() has overloaded in class ReflectionMethodNamedArgs
-                    // Now it provides invoking with named arguments
-                    $actionReflection = new ReflectionMethodNamedArgs($route['controller'], $action);
-                    $controller = $controllerReflection->newInstance();
-                    $response = $actionReflection->invokeArgs($controller, $route['parameters']);
-                    if ($response instanceof Response) {
-                        // ...
-                    } else {
+                    $response = $this->getActionResponse($route['controller'], $route['action'], $route['parameters']);
+
+                    if (!$response instanceof Response) {
                         throw new BadResponseTypeException('Response type not known');
                     }
+                } else {
+                    Service::get('session')->returnUrl = $route['pattern'];
+                    throw new AuthRequiredException();
                 }
             } else {
                 throw new HttpNotFoundException('Route not found');
             }
         } catch (HttpNotFoundException $e) {
             $code = (string)$e->getCode();
-            $response = $this->render($code . '.html', array('code' => $code, 'message' => $e->getMessage())); // Render 404
-        } catch (AuthRequredException $e) {
-            $response = new ResponseRedirect($this->generateRoute('login')); // Reroute to login page
+            $response = $this->renderException($code . '.html', array('code' => $code, 'message' => $e->getMessage())); // Render 404
+        } catch (AuthRequiredException $e) {
+            $response = new ResponseRedirect(Service::get('router')->buildRoute('login')); // Reroute to login page
         } catch (\Exception $e) {
             $code = '500';
-            $response = $this->render($code . '.html', array('code' => (string)$e->getCode(), 'message' => $e->getMessage())); // Do 500 layout...
+            $response = $this->renderException($code . '.html', array('code' => (string)$e->getCode(), 'message' => $e->getMessage())); // Render 500
         }
         $response->send();
     }
 
     /**
-     * Set required services
+     * Invoke obtained controller action with parameters via Reflection and return controller response.
+     *
+     * @param string $controller_name
+     * @param string $action
+     * @param array $data
+     *
+     * @return Response|null
+     * @throws \Exception If obtained controller is not subclass of Controller class
      */
-    private function _setServices()
+    public function getActionResponse($controller_name, $action, Array $data = [])
     {
-        Service::set('router', ObjectPool::get('Framework\Router\Router', include(__DIR__ .'/../app/config/routes.php')));
-        Service::set('loader', ObjectPool::get('Loader'));
-        Service::set('renderer', ObjectPool::get('Framework\Renderer\Renderer', include(__DIR__ . '/../app/config/config.php')));
+        $action .= 'Action';
+
+        $controllerReflection = new \ReflectionClass($controller_name);
+
+        if (!$controllerReflection->isSubclassOf('Framework\Controller\Controller')) {
+            throw new \Exception("Unknown controller " . $controllerReflection->name);
+        }
+
+        if ($controllerReflection->hasMethod($action)) {
+            // ReflectionMethod::invokeArgs() has been overloaded in class ReflectionMethodNamedArgs
+            // Now it provides controller action invoking with named arguments
+            $actionReflection = new ReflectionMethodNamedArgs($controller_name, $action);
+            $controller = $controllerReflection->newInstance();
+            $response = $actionReflection->invokeArgs($controller, $data);
+            return $response;
+        }
+        return null;
     }
 
+    /**
+     * Do exception rendering
+     *
+     * @param string $layout The layout filename
+     * @param array $data The data
+     *
+     * @return Response
+     */
+    public function renderException($layout, Array $data = [])
+    {
+        $renderer = Service::get('renderer');
+        $full_path = realpath($renderer->getErrorTemplatePath() . $layout . '.php');
+        $content = $renderer->render($full_path, $data);
+        return new Response($content);
+    }
 }
 

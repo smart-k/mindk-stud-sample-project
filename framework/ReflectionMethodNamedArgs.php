@@ -8,15 +8,15 @@
 
 namespace Framework;
 
-
 /**
  * Class ReflectionMethodNamedArgs
- * Providing reflection and invoking with named arguments.
+ * Provide reflection and invoking controller action with named arguments.
+ *
  * @package Framework
  */
 class ReflectionMethodNamedArgs extends \ReflectionMethod
 {
-    public function invokeArgs($object, Array $args = array())
+    public function invokeArgs($object, Array $args = [])
     {
         $parameters = $this->getParameters();
         foreach ($parameters as &$param) {

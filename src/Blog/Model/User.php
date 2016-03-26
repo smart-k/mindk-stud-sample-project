@@ -10,6 +10,8 @@ namespace Blog\Model;
 
 use Framework\Model\ActiveRecord;
 use Framework\Security\Model\UserInterface;
+use Framework\DI\Service;
+use Framework\Exception\DatabaseException;
 
 class User extends ActiveRecord implements UserInterface
 {
@@ -27,4 +29,6 @@ class User extends ActiveRecord implements UserInterface
     {
         return $this->role;
     }
+
+
 }

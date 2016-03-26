@@ -9,7 +9,12 @@
 namespace Framework\Exception;
 
 
-class AuthRequredException extends \Exception
+/**
+ * Class AuthRequiredException
+ *
+ * @package Framework\Exception
+ */
+class AuthRequiredException extends \Exception
 {
 
 }

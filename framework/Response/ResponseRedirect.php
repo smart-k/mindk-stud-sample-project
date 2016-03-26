@@ -10,7 +10,7 @@ namespace Framework\Response;
 
 /**
  * Class ResponseRedirect
- * Redirects to another uri/url via a Location header.
+ * Redirect to another URL via a Location header.
  *
  * @package Framework\Response
  */
@@ -20,14 +20,12 @@ class ResponseRedirect extends Response
      * ResponseRedirect constructor.
      * Set the Location header.
      *
-     * @param string $url The url
-     * @param string $content The response content
+     * @param string $url The URL
      * @param int $code The redirect status code
-     * @param string $type Content-Type
      */
-    public function __construct($url, $content = '', $code = 302, $type = 'text/html')
+    public function __construct($url, $code = 302)
     {
-        parent::__construct($content, $code, $type);
+        parent::__construct('', $code);
         $this->setHeader('Location', $url);
     }
 }

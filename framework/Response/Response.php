@@ -8,7 +8,6 @@
 
 namespace Framework\Response;
 
-
 /**
  * Class Response
  *
@@ -19,10 +18,10 @@ class Response
     /**
      * @var array $_headers An array of response headers
      */
-    protected $_headers = array();
+    protected $_headers = [];
 
     /**
-     * @var array An array of status codes and messages
+     * @var array $_msgs An array of status codes and messages
      */
     private static $_msgs = array(
         100 => 'Continue',
@@ -93,7 +92,7 @@ class Response
      * @param int $code The response status code
      * @param string $type Content-Type
      */
-    public function __construct($content='', $code=200, $type='text/html')
+    public function __construct($content = '', $code = 200, $type = 'text/html')
     {
         $this->content = $content;
         $this->code = $code;

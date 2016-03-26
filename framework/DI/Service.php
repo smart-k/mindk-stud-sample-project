@@ -8,38 +8,38 @@
 
 namespace Framework\DI;
 
-
 /**
  * Class Service
+ * Service Locator pattern has been implemented.
  *
  * @package Framework
  */
 class Service
 {
     /**
-     * @var array   Services
+     * @var array The services
      */
-    protected static $_services = array();
+    protected static $_services = [];
 
     /**
-     * Setting the service
+     * Set the service
      *
      * @param $name
-     * @param $object
+     * @param mixed $service
      */
-    public static function set($name, $object){
-
-        self::$_services[$name] = $object;
+    public static function set($name, $service)
+    {
+        self::$_services[$name] = $service;
     }
 
     /**
-     * Getting the service
+     * Get the service
      *
      * @param $name
      * @return object|null
      */
-    public static function get($name){
-
+    public static function get($name)
+    {
         return array_key_exists($name, self::$_services) ? self::$_services[$name] : null;
     }
 }

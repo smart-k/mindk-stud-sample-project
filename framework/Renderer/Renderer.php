@@ -8,26 +8,32 @@
 
 namespace Framework\Renderer;
 
-
 use Framework\ObjectPool;
-use Framework\ReflectionMethodNamedArgs;
 use Framework\Response\Response;
 use Framework\Exception\BadResponseTypeException;
+use Framework\DI\Service;
 
 /**
  * Class Renderer
+ *
  * @package Framework\Renderer
  */
 class Renderer extends ObjectPool
 {
     /**
-     * @var string  Main wrapper template file location
+     * @var string  The file location of the main wrapper template
      */
     protected $_main_template = '';
+
+    /**
+     * @var string  The file location of the error template
+     */
     protected $_error_template = '';
 
     /**
-     * @return string Path to error template directory
+     * Get path to the error template
+     *
+     * @return string The error template directory location
      */
     public function getErrorTemplatePath()
     {
@@ -38,44 +44,91 @@ class Renderer extends ObjectPool
 
     /**
      * Renderer constructor.
+     *
      * @param array $config
      */
-    public function __construct($config = array())
+    public function __construct(Array $config = [])
     {
         $this->_main_template = $config['main_layout'];
         $this->_error_template = $config['error_500'];
     }
 
     /**
-     * Render main template with specified content
+     * Render main wrapper template with specified content
      *
      * @param $content
      *
      * @return html/text
      */
-    function renderMain($content)
+    public function renderMain($content)
     {
-
-        //@TODO: set all required vars and closures..
-
-        return $this->render($this->_main_template, compact('content'), false);
+        $user = Service::get('session')->getUser(); // Get the user data that are stored in the session.
+        $flush = Service::get('session')->getFlush(); // Get the flush messages that are stored in the session.
+        Service::get('session')->clearFlush();
+        return $this->render($this->_main_template, compact('user', 'flush', 'content'), false);
     }
 
     /**
-     * Render specified template file with data provided
+     * Render specified template with data provided
      *
-     * @param   string $template_path Template file path (full)
-     * @param   array  $data Data array
+     * @param   string $template_path Template full path
+     * @param   array $data Data
      * @param   bool    To be wrapped with main template if true
      *
      * @return  text/html $content
-     * @throws \Exception If template file not found
+     * @throws \Exception If template not found
      */
-    public function render($template_path, $data = array(), $wrap = true)
+    public function render($template_path, Array $data = [], $wrap = true)
     {
-        $data['include'] = '$this->_widget';
+        /**
+         * Closure for ../src/views/Post/index.html.php template
+         *
+         * @param string $controller_name
+         * @param string $action
+         * @param array $data
+         *
+         * @throws \Exception If obtained response is not instance of Response.
+         */
+        $include = function ($controller_name, $action, Array $data = []) {
+
+            $response = Service::get('application')->getActionResponse($controller_name, $action, $data);
+
+            if ($response instanceof Response) {
+                echo htmlspecialchars_decode($response->content);
+            } else {
+                throw new BadResponseTypeException('Response type not known');
+            }
+        };
+
+        /**
+         * Closure for login.html.php, signin.html.php and layout.html.php templates
+         *
+         * @param string $route_name
+         * @param array|null $params
+         *
+         * @return string|null
+         */
+        $getRoute = function ($route_name, Array $params = []) {
+            return Service::get('router')->buildRoute($route_name, $params);
+        };
+
+        $token = !empty(Service::get('session')->getSessionToken()) ? Service::get('session')->getSessionToken() : null;
+
+        /**
+         * Closure for add.html.php, login.html.php, signin.html.php templates
+         * Set token into hidden input field on form template
+         */
+        $generateToken = function () use ($token) {
+            echo '<input type="hidden" name="token" value=' . $token . ' >';
+        };
+
         extract($data);
-        // @TODO: provide all required vars or closures...
+
+        if (!empty(Service::get('session')->getPost())) { // Show filled post fields when validation failed
+            $post = Service::get('session')->getPost();
+            Service::get('session')->clearPost();
+        }
+
         if (file_exists($template_path)) {
             ob_start();
             include($template_path);
@@ -91,36 +144,7 @@ class Renderer extends ObjectPool
                 throw new \Exception('File ' . $this->_main_template . ' not found');
             }
         }
-        return $content;
-    }
 
-    /**
-     * Widget for view template
-     *
-     * @param string $controller_name
-     * @param string $action
-     * @param array $data
-     *
-     * @throws \Exception If obtained controller is not subclass of base controller.
-     */
-    private function _widget($controller_name, $action, $data = array())
-    {
-        $controllerReflection = new \ReflectionClass($controller_name);
-        if (!$controllerReflection->isSubclassOf('Framework\Controller\Controller')) {
-            throw new \Exception("Unknown controller " . $controllerReflection->name);
-        }
-        $action .= 'Action';
-        if ($controllerReflection->hasMethod($action)) {
-            // ReflectionMethod::invokeArgs() has overloaded in class ReflectionMethodNamedArgs
-            // Now it provides invoking with named arguments
-            $actionReflection = new ReflectionMethodNamedArgs($controller_name, $action);
-            $controller = $controllerReflection->newInstance();
-            $response = $actionReflection->invokeArgs($controller, $data);
-            if ($response instanceof Response) {
-                echo htmlspecialchars_decode($response['content']);
-            } else {
-                throw new BadResponseTypeException('Response type not known');
-            }
-        }
+        return $content;
     }
 }

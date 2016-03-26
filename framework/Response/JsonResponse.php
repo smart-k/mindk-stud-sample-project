@@ -11,7 +11,7 @@ namespace Framework\Response;
 
 /**
  * Class JsonResponse
- * Response represents an HTTP response in JSON format.
+ * JsonResponse represents an HTTP response in JSON format.
  *
  * @package Framework\Response
  */
@@ -20,14 +20,14 @@ class JsonResponse extends Response
     /**
      * JsonResponse constructor.
      *
-     * @param array $data The response data
+     * @param array|null $data The response data
      * @param int $code The response status code
      * @param string $type Content-Type
      */
-    public function __construct($data = null, $code = 200, $type = 'application/json')
+    public function __construct(Array $data = [], $code = 200, $type = 'application/json')
     {
         parent::__construct('', $code, $type);
-            if ($data === null) {
+        if (empty($data)) {
             $this->code = 500;
             $data = new \ArrayObject();
         }
