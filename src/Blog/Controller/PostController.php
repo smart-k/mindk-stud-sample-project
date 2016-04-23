@@ -16,13 +16,22 @@ use Framework\Exception\HttpNotFoundException;
 use Framework\Request\Request;
 use Framework\Response\Response;
 use Framework\Validation\Validator;
+use Framework\Response\ResponseRedirect;
+use Framework\Exception\AuthRequiredException;
 
 class PostController extends Controller
 {
-
     public function indexAction()
     {
-        return $this->render('index.html', array('posts' => Post::find('all')));
+        $route = Service::get('router')->parseRoute();
+        $user = Service::get('session')->getUser();
+        $user_role = is_object($user) ? $user->getRole() : $user['role'];
+        $route = Service::get('router')->parseRoute();
+        if ($user_role === $route['security'][0]) {
+            return $this->render('index.html', array('posts' => Post::find('all')));
+        }
+        Service::get('session')->returnUrl = $route['pattern'];
+        throw new AuthRequiredException();
     }
 
     public function getPostAction($id)
@@ -32,6 +41,7 @@ class PostController extends Controller
 
     public function addAction()
     {
+
         if ($this->getRequest()->isPost()) {
             try {
                 $post = new Post();

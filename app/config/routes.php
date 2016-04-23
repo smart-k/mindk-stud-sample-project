@@ -4,7 +4,8 @@ return array(
     'home' => array(
         'pattern' => '/',
         'controller' => 'Blog\\Controller\\PostController',
-        'action' => 'index'
+        'action' => 'index',
+        'security' => array('ROLE_USER')
     ),
     'testredirect' => array(
         'pattern' => '/test_redirect',
